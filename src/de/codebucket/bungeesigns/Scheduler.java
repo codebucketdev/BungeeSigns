@@ -26,15 +26,7 @@ public class Scheduler implements Listener
 	
 	public void stopSchedulers()
 	{
-		try
-		{
-			getPingScheduler().cancel();
-			getSignScheduler().cancel();
-		}
-		catch(IllegalStateException e)
-		{
-			
-		}
+		plugin.getServer().getScheduler().cancelTasks(plugin);
 	}
 	
 	private void startPingScheduler()
