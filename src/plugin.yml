@@ -1,0 +1,9 @@
+name: BungeeSigns
+author: Codebucket
+version: 1.3 Release
+main: de.codebucket.bungeesigns.BungeeSigns
+website: http://www.dcminecraft.jimdo.de
+commands:
+     bsreload:
+          description: Reloads the plugin.
+          usage: /<command>
