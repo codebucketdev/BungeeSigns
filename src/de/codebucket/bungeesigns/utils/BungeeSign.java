@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import de.codebucket.bungeesigns.BungeeSigns;
 
-public class ServerSign 
+public class BungeeSign 
 {
 	private String world;
 	private int x;
@@ -26,7 +26,7 @@ public class ServerSign
 	private String layout;
 	private boolean broken;
 	
-	public ServerSign(String server, Location location, String layout)
+	public BungeeSign(String server, Location location, String layout)
 	{
 		this.world = location.getWorld().getName();
 		this.x = location.getBlockX();
@@ -137,7 +137,7 @@ public class ServerSign
 				Block b = location.getBlock();
 				if(b.getState() instanceof Sign)
 				{
-					ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(this.server);
+					ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(this.server);
 					SignLayout layout = BungeeSigns.getInstance().getConfigData().getLayout(this.layout);
 					
 					if(server != null)

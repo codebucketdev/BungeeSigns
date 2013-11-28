@@ -4,15 +4,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.codebucket.bungeesigns.utils.ServerInfo;
+import de.codebucket.bungeesigns.utils.ServerPing;
 
 public class BungeeSignsPingEvent extends Event implements Cancellable
 {
 	private static final HandlerList handlers = new HandlerList();
-	private ServerInfo info;
+	private ServerPing info;
 	private boolean cancelled;
 	
-	public BungeeSignsPingEvent(ServerInfo info)
+	public BungeeSignsPingEvent(ServerPing info)
 	{
 		this.info = info;
 	}
@@ -27,7 +27,7 @@ public class BungeeSignsPingEvent extends Event implements Cancellable
         return handlers;
     }
 	
-	public ServerInfo getServer()
+	public ServerPing getServer()
 	{
 		return info;
 	}

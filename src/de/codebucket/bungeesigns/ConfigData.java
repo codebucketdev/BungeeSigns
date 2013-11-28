@@ -15,8 +15,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.codebucket.bungeesigns.utils.LocationSerialiser;
 import de.codebucket.bungeesigns.utils.SignLayout;
-import de.codebucket.bungeesigns.utils.ServerInfo;
-import de.codebucket.bungeesigns.utils.ServerSign;
+import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class ConfigData 
 {
@@ -25,8 +25,8 @@ public class ConfigData
 	private FileConfiguration config;
 	private FileConfiguration layout;
 	private FileConfiguration sign;
-	private List<ServerInfo> servers = new ArrayList<>();
-	private List<ServerSign> signs = new ArrayList<>();
+	private List<ServerPing> servers = new ArrayList<>();
+	private List<BungeeSign> signs = new ArrayList<>();
 	private List<Block> blocks = new ArrayList<>();
 	private Map<String, SignLayout> layouts = new HashMap<>();
 	private long cooldown;
@@ -139,7 +139,7 @@ public class ConfigData
 			String ip = address[0];
 			String port = address[1];
 			
-			ServerInfo serverping = new ServerInfo(server, displayname, ip, Integer.valueOf(port), this.pingTimeout);
+			ServerPing serverping = new ServerPing(server, displayname, ip, Integer.valueOf(port), this.pingTimeout);
 			serverping.resetPingDelay();
 			this.servers.add(serverping);
 		}
@@ -176,7 +176,7 @@ public class ConfigData
 			Block b = location.getBlock();
 			this.blocks.add(b);
 			
-			ServerSign serversign = new ServerSign(server, location, layout);			
+			BungeeSign serversign = new BungeeSign(server, location, layout);			
 			this.signs.add(serversign);
 		}
 	}
@@ -186,9 +186,9 @@ public class ConfigData
 		return this.layouts.get(layout);
 	}
 	
-	public ServerInfo getServer(String server)
+	public ServerPing getServer(String server)
 	{
-		for(ServerInfo info : this.servers)
+		for(ServerPing info : this.servers)
 		{
 			if(info.getName().equals(server))
 			{
@@ -253,22 +253,22 @@ public class ConfigData
 	    }
 	}
 	
-	public List<ServerInfo> getServers()
+	public List<ServerPing> getServers()
 	{
 		return this.servers;
 	}
 	
-	public void setServers(List<ServerInfo> servers)
+	public void setServers(List<ServerPing> servers)
 	{
 	    this.servers = servers;
 	}
 	
-	public List<ServerSign> getSigns()
+	public List<BungeeSign> getSigns()
 	{
 		return this.signs;
 	}
 	
-	public void setSigns(List<ServerSign> signs)
+	public void setSigns(List<BungeeSign> signs)
 	{
 	    this.signs = signs;
 	}
@@ -313,9 +313,9 @@ public class ConfigData
 		this.pingTimeout = timeout;
 	}
 	
-	public ServerSign getSignFromLocation(Location l)
+	public BungeeSign getSignFromLocation(Location l)
 	{
-		for(ServerSign sign : signs)
+		for(BungeeSign sign : signs)
 		{
 			if(l.equals(sign.getLocation()))
 			{
@@ -354,7 +354,7 @@ public class ConfigData
 			e.printStackTrace();
 		}
 		
-		ServerSign ssign = new ServerSign(server, b.getLocation(), layout);
+		BungeeSign ssign = new BungeeSign(server, b.getLocation(), layout);
 		signs.add(ssign);
 		blocks.add(b);
 	}
@@ -362,7 +362,7 @@ public class ConfigData
 	public void removeSign(Block b)
 	{
 		Location location;
-		for(ServerSign sign : signs)
+		for(BungeeSign sign : signs)
 		{
 			if(b.getLocation().equals(sign.getLocation()))
 			{

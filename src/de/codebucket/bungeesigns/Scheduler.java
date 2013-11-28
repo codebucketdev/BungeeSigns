@@ -6,8 +6,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import de.codebucket.bungeesigns.event.BungeeSignsPingEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsUpdateEvent;
-import de.codebucket.bungeesigns.utils.ServerInfo;
-import de.codebucket.bungeesigns.utils.ServerSign;
+import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class Scheduler implements Listener
 {
@@ -36,7 +36,7 @@ public class Scheduler implements Listener
 			@Override
 			public void run() 
 			{
-				for(ServerInfo server : plugin.getConfigData().getServers())
+				for(ServerPing server : plugin.getConfigData().getServers())
 				{
 					BungeeSignsPingEvent event = new BungeeSignsPingEvent(server);
 					Bukkit.getPluginManager().callEvent(event);
@@ -58,7 +58,7 @@ public class Scheduler implements Listener
 			@Override
 			public void run()
 			{
-				for(ServerSign sign : plugin.getConfigData().getSigns())
+				for(BungeeSign sign : plugin.getConfigData().getSigns())
 				{
 					BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(sign);
 					Bukkit.getPluginManager().callEvent(event);

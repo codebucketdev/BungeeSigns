@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 import de.codebucket.bungeesigns.BungeeSigns;
 
-public class ServerInfo 
+public class ServerPing 
 {
 	private String name;
 	
@@ -30,7 +30,7 @@ public class ServerInfo
 	private long pingStartTime;
 	private long pingEndTime;
 	   
-	public ServerInfo(String servername, String displayname, String address, int port, int timeout)
+	public ServerPing(String servername, String displayname, String address, int port, int timeout)
 	{
 		this.online = false;
 		this.name = servername;

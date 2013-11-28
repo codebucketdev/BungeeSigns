@@ -16,8 +16,8 @@ import de.codebucket.bungeesigns.BungeeSigns;
 import de.codebucket.bungeesigns.event.BungeeSignsCreateEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsDestroyEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsInteractEvent;
-import de.codebucket.bungeesigns.utils.ServerInfo;
-import de.codebucket.bungeesigns.utils.ServerSign;
+import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.BungeeSign;
 
 //ONE SECOND = 1000ms
 public class ServerListener implements Listener
@@ -31,13 +31,13 @@ public class ServerListener implements Listener
 	}
 	
 	@EventHandler
-	public void createServerSign(SignChangeEvent e)
+	public void createBungeeSign(SignChangeEvent e)
 	{
-		if(e.getPlayer().hasPermission("bungeesigns.create"))
+		if(e.getLine(0).equalsIgnoreCase("[bsigns]"))
 		{
-			if(e.getLine(0).equalsIgnoreCase("[bsigns]"))
+			if(e.getPlayer().hasPermission("bungeesigns.create"))
 			{
-				ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
+				ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
 				String layout = e.getLine(2);
 				
 				if (layout.equalsIgnoreCase("")) 
@@ -49,7 +49,7 @@ public class ServerListener implements Listener
 			    {
 			        if (server != null) 
 			        {
-			        	ServerSign ssign = new ServerSign(server.getName(), e.getBlock().getLocation(), layout);
+			        	BungeeSign ssign = new BungeeSign(server.getName(), e.getBlock().getLocation(), layout);
 			        	BungeeSignsCreateEvent event = new BungeeSignsCreateEvent(e.getPlayer(), ssign);
 			        	Bukkit.getPluginManager().callEvent(event);
 			        	
@@ -71,24 +71,26 @@ public class ServerListener implements Listener
 					e.getBlock().breakNaturally();
 				}
 			}
-		}
-		else
-		{
-			e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
-			e.getBlock().breakNaturally();
+			else
+			{
+				e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+				e.getBlock().breakNaturally();
+			}
 		}
 	}
 	
+	
+	//TODO UPDATE BLOCKCHECK
 	@EventHandler
-	public void removeServerSign(BlockBreakEvent e)
+	public void removeBungeeSign(BlockBreakEvent e)
 	{
 		if(e.getBlock().getState() instanceof Sign)
 		{
-			if(e.getPlayer().hasPermission("bungeesigns.destroy"))
+			if(BungeeSigns.getInstance().getConfigData().containsSign(e.getBlock()))
 			{
-				if(BungeeSigns.getInstance().getConfigData().containsSign(e.getBlock()))
+				if(e.getPlayer().hasPermission("bungeesigns.destroy"))
 				{
-					ServerSign ssign = BungeeSigns.getInstance().getConfigData().getSignFromLocation(e.getBlock().getLocation());
+					BungeeSign ssign = BungeeSigns.getInstance().getConfigData().getSignFromLocation(e.getBlock().getLocation());
 					BungeeSignsDestroyEvent event = new BungeeSignsDestroyEvent(e.getPlayer(), ssign);
 					Bukkit.getPluginManager().callEvent(event);
 					
@@ -98,32 +100,35 @@ public class ServerListener implements Listener
 						e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
 					}
 				}
-			}
-			else
-			{
-				e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+				else
+				{
+					e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+					e.setCancelled(true);
+				}
 			}
 		}
 	}
 	
+	//TODO BLOCKCHECK
 	@EventHandler
-	public void teleportServerSign(PlayerInteractEvent e)
+	public void interactBungeeSign(PlayerInteractEvent e)
 	{
 		if(e.getAction() == Action.RIGHT_CLICK_BLOCK)
 		{
 			if(e.getClickedBlock().getState() instanceof Sign)
 			{
-				if(e.getPlayer().hasPermission("bungeesigns.use"))
+				if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(e.getClickedBlock()))
 				{
-					if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(e.getClickedBlock()))
+					if(e.getPlayer().hasPermission("bungeesigns.use"))
 					{
-						for(ServerSign ssign : BungeeSigns.getInstance().getConfigData().getSigns())
+						for(BungeeSign ssign : BungeeSigns.getInstance().getConfigData().getSigns())
 						{
 							if(ssign != null && !ssign.isBroken() && ssign.getLocation().equals(e.getClickedBlock().getLocation()))
 							{
-								ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
+								ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
 								if(server != null)
 								{
+									e.setCancelled(true);
 									BungeeSignsInteractEvent event = new BungeeSignsInteractEvent(e.getPlayer(), ssign, server);
 									Bukkit.getPluginManager().callEvent(event);
 									
@@ -131,8 +136,6 @@ public class ServerListener implements Listener
 									{
 										if(BungeeSigns.getInstance().getConfigData().getLayout(ssign.getLayout()).isTeleport())
 										{
-											e.setCancelled(true);
-											
 											if(server.isOnline())
 											{
 												if(!hasCooldown(e.getPlayer()))

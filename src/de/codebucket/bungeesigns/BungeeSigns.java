@@ -13,7 +13,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.mcstats.Metrics;
 
 import de.codebucket.bungeesigns.handlers.ServerListener;
-import de.codebucket.bungeesigns.utils.ServerSign;
+import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 {
@@ -47,7 +47,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		data.loadConfig();
 		
 		//RESET SIGNS
-		for(ServerSign s : data.getSigns())
+		for(BungeeSign s : data.getSigns())
 		{
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
@@ -84,7 +84,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		scheduler.stopSchedulers();
 		
 		//RESET SIGNS
-		for(ServerSign s : data.getSigns())
+		for(BungeeSign s : data.getSigns())
 		{
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{

@@ -5,18 +5,18 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.codebucket.bungeesigns.utils.ServerSign;
+import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class BungeeSignsDestroyEvent extends Event implements Cancellable
 {
 	private static final HandlerList handlers = new HandlerList();
 	
 	private Player player;
-	private ServerSign sign;
+	private BungeeSign sign;
 
 	private boolean cancelled;
 	
-	public BungeeSignsDestroyEvent(Player player, ServerSign sign)
+	public BungeeSignsDestroyEvent(Player player, BungeeSign sign)
 	{
 		this.player = player;
 		this.sign = sign;
@@ -37,7 +37,7 @@ public class BungeeSignsDestroyEvent extends Event implements Cancellable
 		return player;
 	}
 	
-	public ServerSign getSign()
+	public BungeeSign getSign()
 	{
 		return sign;
 	}
