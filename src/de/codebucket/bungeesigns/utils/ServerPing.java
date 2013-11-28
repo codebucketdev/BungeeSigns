@@ -234,9 +234,15 @@ public class ServerPing
 			this.setPingEnd(System.currentTimeMillis());
 			this.setOnline(false);
 		} 
-		catch (IOException e) 
+		catch(IOException e) 
 		{
 			BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error fetching data from server " + getAddress() + ":" + getPort() + "!");
+			this.setPingEnd(System.currentTimeMillis());
+			this.setOnline(false);
+		}
+		catch(Exception e)
+		{
+			BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] An unknown error has occurred when trying to connect to  " + getAddress() + ":" + getPort() + "!");
 			this.setPingEnd(System.currentTimeMillis());
 			this.setOnline(false);
 		}

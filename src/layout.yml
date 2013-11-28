@@ -59,7 +59,3 @@ layouts:
     offline-motd: '&cOffline'
     offline-message: '&a[Games] &c%name% is offline!'
     cooldown-message: '&cYou have to wait %cooldown% seconds before you can use this sign again.'
-    
-variables:
-  mapname: 'split(-),2'
-  status: 'substring(5,15)'
