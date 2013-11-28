@@ -39,6 +39,7 @@ public class ServerPing
 	    this.port = port;
 	    this.timeout = timeout;
 	    this.pingStartTime = System.currentTimeMillis();
+	    this.pingEndTime = System.currentTimeMillis();
 	}
 	
 	public String getName() 
