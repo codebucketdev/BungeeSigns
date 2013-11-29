@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import de.codebucket.bungeesigns.utils.CustomVariable;
 import de.codebucket.bungeesigns.utils.LocationSerialiser;
 import de.codebucket.bungeesigns.utils.SignLayout;
 import de.codebucket.bungeesigns.utils.ServerPing;
@@ -27,6 +28,7 @@ public class ConfigData
 	private FileConfiguration sign;
 	private List<ServerPing> servers = new ArrayList<>();
 	private List<BungeeSign> signs = new ArrayList<>();
+	private List<CustomVariable> variables = new ArrayList<>();
 	private List<Block> blocks = new ArrayList<>();
 	private Map<String, SignLayout> layouts = new HashMap<>();
 	private long cooldown;
@@ -93,6 +95,7 @@ public class ConfigData
 		loadServers();
 		loadLayouts();
 		loadSigns();
+		loadVariables();
 	}
 	
 	public void reloadConfig()
@@ -104,6 +107,7 @@ public class ConfigData
 		servers.clear();
 		signs.clear();
 		layouts.clear();
+		variables.clear();
 		
 		loadConfig();
 	}
@@ -117,6 +121,7 @@ public class ConfigData
 		servers.clear();
 		signs.clear();
 		layouts.clear();
+		variables.clear();
 	}
 	
 	private void loadSettings()
@@ -178,6 +183,21 @@ public class ConfigData
 			
 			BungeeSign serversign = new BungeeSign(server, location, layout);			
 			this.signs.add(serversign);
+		}
+	}
+	
+	private void loadVariables()
+	{
+		ConfigurationSection variables = this.layout.getConfigurationSection("variables");
+		
+		for(String var : variables.getKeys(false)) 
+		{
+		    ConfigurationSection cs = variables.getConfigurationSection(var);
+		    String type = cs.getString("type");
+		    String args = cs.getString("arguments");
+		    
+		    CustomVariable cvar = new CustomVariable(type, "%"+var+"%", args);
+		    this.variables.add(cvar);
 		}
 	}
 	
@@ -283,6 +303,16 @@ public class ConfigData
 	    this.layouts = signLayouts;
 	}
 	
+	public List<CustomVariable> getVariables() 
+	{
+		return variables;
+	}
+
+	public void setVariables(List<CustomVariable> variables) 
+	{
+		this.variables = variables;
+	}
+
 	public List<Block> getBlocks()
 	{
 		return this.blocks;
