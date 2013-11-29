@@ -23,7 +23,6 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 	
 	public static String pre = "§7[§3BungeeSigns§7] §r";
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() 
 	{
@@ -47,8 +46,9 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		data.loadConfig();
 		
 		//RESET SIGNS
-		for(BungeeSign s : data.getSigns())
+		for (int i = 0; i < data.getSigns().size(); i++) 
 		{
+			BungeeSign s = data.getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -60,8 +60,9 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			}
 		}
 		
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, scheduler.getSignScheduler(), 40L, data.getPingInterval()*20L);
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, scheduler.getPingScheduler(), 100L, data.getPingInterval()*20L);
+		//START SCHEDULERS
+		scheduler.startSignScheduler();
+		scheduler.startPingScheduler();
 		
 		//EVENTS
 		Bukkit.getPluginManager().registerEvents(new ServerListener(this), this);
@@ -77,15 +78,10 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 	@Override
 	public void onDisable() 
 	{
-		//UNLOAD CONFIG
-		data.unloadConfig();
-		
-		//STOP SCHEDULERS
-		scheduler.stopSchedulers();
-		
 		//RESET SIGNS
-		for(BungeeSign s : data.getSigns())
+		for (int i = 0; i < data.getSigns().size(); i++) 
 		{
+			BungeeSign s = data.getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -96,6 +92,12 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				sign.update(true);
 			}
 		}
+		
+		//UNLOAD CONFIG
+		data.unloadConfig();
+				
+		//STOP SCHEDULERS
+		scheduler.stopSchedulers();	
 		
 		//HINWEIS
 		getLogger().info("BungeeSigns disabled!");
