@@ -15,21 +15,23 @@ public class Scheduler implements Listener
 	private BukkitRunnable pingScheduler;
 	private BukkitRunnable signScheduler;
 	
+	private int PID_PING;
+	private int PID_SIGN;
+	
 	public Scheduler(BungeeSigns plugin)
 	{
 		this.plugin = plugin;
-		this.startPingScheduler();
-		this.startSignScheduler();
-		
-		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
 	public void stopSchedulers()
 	{
+		plugin.getServer().getScheduler().cancelTask(PID_PING);
+		plugin.getServer().getScheduler().cancelTask(PID_SIGN);
 		plugin.getServer().getScheduler().cancelTasks(plugin);
 	}
 	
-	private void startPingScheduler()
+	@SuppressWarnings("deprecation")
+	public void startPingScheduler()
 	{
 		BukkitRunnable runnable = new BukkitRunnable() 
 		{
@@ -49,9 +51,10 @@ public class Scheduler implements Listener
 		};
 		
 		pingScheduler = runnable;
+		PID_PING = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, runnable, 100L, BungeeSigns.getInstance().getConfigData().getPingInterval()*20L);
 	}
 	
-	private void startSignScheduler()
+	public void startSignScheduler()
 	{
 		BukkitRunnable runnable = new BukkitRunnable()
 		{
@@ -64,20 +67,14 @@ public class Scheduler implements Listener
 					Bukkit.getPluginManager().callEvent(event);
 					if(!event.isCancelled())
 					{
-						try
-						{
-							sign.updateSign();
-						}
-						catch(Exception e)
-						{
-							e.printStackTrace();
-						}
+						sign.updateSign();
 					}
 				}
 			}
 		};
 		
 		signScheduler = runnable;
+		PID_SIGN = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, runnable, 40L, BungeeSigns.getInstance().getConfigData().getPingInterval()*20L);
 	}
 	
 	public BukkitRunnable getPingScheduler()
