@@ -8,6 +8,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.UnhandledException;
+import org.bukkit.Bukkit;
+
 import de.codebucket.bungeesigns.BungeeSigns;
 
 public class ServerPing 
@@ -17,6 +20,8 @@ public class ServerPing
 	private String address;
 	private int port;
 	private int timeout;
+	
+	private boolean local;
 	
 	private boolean online;
 	private int playercount;
@@ -40,6 +45,11 @@ public class ServerPing
 	    this.timeout = timeout;
 	    this.pingStartTime = System.currentTimeMillis();
 	    this.pingEndTime = System.currentTimeMillis();
+	    
+	    if(Bukkit.getServer().getIp().equals(address) && Bukkit.getServer().getPort() == Integer.valueOf(port))
+	    {
+	    	setLocal(true);
+	    }
 	}
 	
 	public String getName() 
@@ -82,7 +92,17 @@ public class ServerPing
 	    this.timeout = timeout;
 	}
 	   
-    public boolean isOnline()
+    public boolean isLocal() 
+    {
+		return local;
+	}
+
+	private void setLocal(boolean local) 
+	{
+		this.local = local;
+	}
+
+	public boolean isOnline()
     {
 	    return this.online;
 	}
@@ -174,78 +194,105 @@ public class ServerPing
 
 	public void ping()
 	{		
-		long pingStartTime = System.currentTimeMillis();
-		try
+		if(!isLocal())
 		{
-	        final Socket socket = new Socket();
-	        socket.setSoTimeout(this.timeout);
-	        socket.connect(new InetSocketAddress(this.address, this.port), this.timeout);
-	
-	        final DataInputStream in = new DataInputStream(socket.getInputStream());
-	        final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-	
-	        out.write(0xFE);
-	        out.write(0x01);
-	        out.write(0xFA);
-	        out.writeShort(11);
-	        out.writeChars("MC|PingHost");
-	        out.writeShort(7 + 2 * this.address.length());
-	        out.writeByte(73); // Protocol version
-	        out.writeShort(this.address.length());
-	        out.writeChars(this.address);
-	        out.writeInt(this.port);
-	
-	        out.flush();
-	
-	        if (in.read() != 255) 
-	        {
-	        	socket.close();
-	            throw new IOException("Bad message: An incorrect packet was received.");
-	        }
-	
-	        final short bit = in.readShort();
-	
-	        final StringBuilder sb = new StringBuilder();
-	        for (int i = 0; i < bit; ++i) 
-	        {
-	            sb.append(in.readChar());
-	        }
-	
-	        in.close();
-	        out.close();
-	        socket.close();
-	
-	        final String[] bits = sb.toString().split("\0");
-	        
-	        
-	        this.setVersion(bits[1]);
-	        this.setProtocol(bits[2]);
-	        this.setMotd(bits[3]);
-	        this.setPlayerCount(Integer.valueOf(bits[4]));
-	        this.setMaxPlayers(Integer.valueOf(bits[5]));
-	        this.setPingStart(pingStartTime);
+			long pingStartTime = System.currentTimeMillis();
+			try
+			{
+		        final Socket socket = new Socket();
+		        socket.setSoTimeout(this.timeout);
+		        socket.connect(new InetSocketAddress(this.address, this.port), this.timeout);
+		
+		        final DataInputStream in = new DataInputStream(socket.getInputStream());
+		        final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		
+		        out.write(0xFE);
+		        out.write(0x01);
+		        out.write(0xFA);
+		        out.writeShort(11);
+		        out.writeChars("MC|PingHost");
+		        out.writeShort(7 + 2 * this.address.length());
+		        out.writeByte(73); // Protocol version
+		        out.writeShort(this.address.length());
+		        out.writeChars(this.address);
+		        out.writeInt(this.port);
+		
+		        out.flush();
+		
+		        if (in.read() != 255) 
+		        {
+		        	socket.close();
+		            throw new IOException("Bad message: An incorrect packet was received.");
+		        }
+		
+		        final short bit = in.readShort();
+		
+		        final StringBuilder sb = new StringBuilder();
+		        for (int i = 0; i < bit; ++i) 
+		        {
+		            sb.append(in.readChar());
+		        }
+		
+		        in.close();
+		        out.close();
+		        socket.close();
+		
+		        final String[] bits = sb.toString().split("\0");
+		        
+		        
+		        this.setVersion(bits[1]);
+		        this.setProtocol(bits[2]);
+		        this.setMotd(bits[3]);
+		        this.setPlayerCount(Integer.valueOf(bits[4]));
+		        this.setMaxPlayers(Integer.valueOf(bits[5]));
+		        this.setPingStart(pingStartTime);
+		        
+		        this.setOnline(true);
+			}
+			catch(ConnectException e)
+			{
+				BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error while connecting to server " + getAddress() + ":" + getPort() + "!");
+				this.setOnline(false);
+			} 
+			catch(IOException e) 
+			{
+				BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error fetching data from server " + getAddress() + ":" + getPort() + "!");
+				this.setOnline(false);
+			}
+			catch(UnhandledException e)
+			{
+				BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error while connecting to server " + getAddress() + ":" + getPort() + "!");
+				this.setOnline(false);
+			}
+			catch(Exception e)
+			{
+				BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] An unknown error has occurred when trying to connect to  " + getAddress() + ":" + getPort() + "!");
+				this.setOnline(false);
+			}
+			finally
+			{
+				this.setPingEnd(System.currentTimeMillis());
+			}
+		}
+		else
+		{
+	        this.setProtocol(this.getBukkitVersion());
+	        this.setMotd(Bukkit.getMotd());
+	        this.setPlayerCount(Bukkit.getOnlinePlayers().length);
+	        this.setMaxPlayers(Bukkit.getMaxPlayers());
+	        this.setPingStart(System.currentTimeMillis());
 	        this.setPingEnd(System.currentTimeMillis());
-	        
 	        this.setOnline(true);
 		}
-		catch(ConnectException e)
-		{
-			BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error while connecting to server " + getAddress() + ":" + getPort() + "!");
-			this.setPingEnd(System.currentTimeMillis());
-			this.setOnline(false);
-		} 
-		catch(IOException e) 
-		{
-			BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Error fetching data from server " + getAddress() + ":" + getPort() + "!");
-			this.setPingEnd(System.currentTimeMillis());
-			this.setOnline(false);
-		}
-		catch(Exception e)
-		{
-			BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] An unknown error has occurred when trying to connect to  " + getAddress() + ":" + getPort() + "!");
-			this.setPingEnd(System.currentTimeMillis());
-			this.setOnline(false);
-		}
+	}
+	
+	private String getBukkitVersion()
+	{
+		String version = Bukkit.getVersion();
+		version = version.replace("(", "");
+		version = version.replace(")", "");
+		version = version.split(" ")[2];
+		return version;
 	}
 	
 	private long calculatePingDelay()
