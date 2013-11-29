@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 
+import de.codebucket.bungeesigns.BungeeSigns;
+
 public class SignLayout 
 {
 	private String name;
@@ -93,7 +95,16 @@ public class SignLayout
 				line = line.replaceAll("%address%", server.getAddress());
 				line = line.replaceAll("%port%", String.valueOf(server.getPort()));
 				line = line.replaceAll("%ping%", String.valueOf(server.getPingDelay()));
-				line = line.replaceAll("%version%", server.getProtocol());				
+				line = line.replaceAll("%version%", server.getProtocol());		
+				
+				for(CustomVariable var : BungeeSigns.getInstance().getConfigData().getVariables())
+				{
+					if(line.contains(var.getVariable()))
+					{
+						line = var.parseVariable(server.getMotd());
+					}
+				}
+				
 				line = textValues(line);
 				line = editText(line);
 			}
@@ -106,7 +117,16 @@ public class SignLayout
 				line = line.replaceAll("%address%", server.getAddress());
 				line = line.replaceAll("%port%", String.valueOf(server.getPort()));
 				line = line.replaceAll("%ping%", String.valueOf(server.getPingDelay()));
-				line = line.replaceAll("%version%", " ");				
+				line = line.replaceAll("%version%", " ");	
+				
+				for(CustomVariable var : BungeeSigns.getInstance().getConfigData().getVariables())
+				{
+					if(line.contains(var.getVariable()))
+					{
+						line = line.replaceAll(var.getVariable(), " ");
+					}
+				}
+				
 				line = textValues(line);
 				line = editText(line);
 			}
