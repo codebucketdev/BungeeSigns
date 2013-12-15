@@ -33,77 +33,82 @@ public class ServerListener implements Listener
 	@EventHandler
 	public void createBungeeSign(SignChangeEvent e)
 	{
-		if(e.getLine(0).equalsIgnoreCase("[bsigns]"))
+		if(!e.isCancelled())
 		{
-			if(e.getPlayer().hasPermission("bungeesigns.create"))
+			if(e.getLine(0).equalsIgnoreCase("[bsigns]"))
 			{
-				ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
-				String layout = e.getLine(2);
-				
-				if (layout.equalsIgnoreCase("")) 
+				if(e.getPlayer().hasPermission("bungeesigns.create"))
 				{
-			        layout = "default";
-			    }
-				
-				if (this.plugin.getConfigData().getLayout(layout) != null)
-			    {
-			        if (server != null) 
-			        {
-			        	BungeeSign ssign = new BungeeSign(server.getName(), e.getBlock().getLocation(), layout);
-			        	BungeeSignsCreateEvent event = new BungeeSignsCreateEvent(e.getPlayer(), ssign);
-			        	Bukkit.getPluginManager().callEvent(event);
-			        	
-			        	if(!event.isCancelled())
-			        	{
-			        		BungeeSigns.getInstance().getConfigData().addSign(e.getBlock(), server.getName(), layout);
-			        		e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
-			        	}
-			        }
-			        else
-			        {
-			        	e.getPlayer().sendMessage(BungeeSigns.pre + "§cServer '" + e.getLine(1) + "' not exists!");
-			        	e.getBlock().breakNaturally();
-			        }
-			    }
-				else
-				{
-					e.getPlayer().sendMessage(BungeeSigns.pre + "§cLayout '" + e.getLine(2) + "' not exists!");
-					e.getBlock().breakNaturally();
-				}
-			}
-			else
-			{
-				e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
-				e.getBlock().breakNaturally();
-			}
-		}
-	}
-	
-	
-	//TODO UPDATE BLOCKCHECK
-	@EventHandler
-	public void removeBungeeSign(BlockBreakEvent e)
-	{
-		if(e.getBlock().getState() instanceof Sign)
-		{
-			if(BungeeSigns.getInstance().getConfigData().containsSign(e.getBlock()))
-			{
-				if(e.getPlayer().hasPermission("bungeesigns.destroy"))
-				{
-					BungeeSign ssign = BungeeSigns.getInstance().getConfigData().getSignFromLocation(e.getBlock().getLocation());
-					BungeeSignsDestroyEvent event = new BungeeSignsDestroyEvent(e.getPlayer(), ssign);
-					Bukkit.getPluginManager().callEvent(event);
+					ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
+					String layout = e.getLine(2);
 					
-					if(!event.isCancelled())
+					if (layout.equalsIgnoreCase("")) 
 					{
-						BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock());
-						e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
+				        layout = "default";
+				    }
+					
+					if (this.plugin.getConfigData().getLayout(layout) != null)
+				    {
+				        if (server != null) 
+				        {
+				        	BungeeSign ssign = new BungeeSign(server.getName(), e.getBlock().getLocation(), layout);
+				        	BungeeSignsCreateEvent event = new BungeeSignsCreateEvent(e.getPlayer(), ssign);
+				        	Bukkit.getPluginManager().callEvent(event);
+				        	
+				        	if(!event.isCancelled())
+				        	{
+				        		BungeeSigns.getInstance().getConfigData().addSign(e.getBlock(), server.getName(), layout);
+				        		e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
+				        	}
+				        }
+				        else
+				        {
+				        	e.getPlayer().sendMessage(BungeeSigns.pre + "§cServer '" + e.getLine(1) + "' not exists!");
+				        	e.getBlock().breakNaturally();
+				        }
+				    }
+					else
+					{
+						e.getPlayer().sendMessage(BungeeSigns.pre + "§cLayout '" + e.getLine(2) + "' not exists!");
+						e.getBlock().breakNaturally();
 					}
 				}
 				else
 				{
 					e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
-					e.setCancelled(true);
+					e.getBlock().breakNaturally();
+				}
+			}
+		}
+	}
+	
+	
+	@EventHandler
+	public void removeBungeeSign(BlockBreakEvent e)
+	{
+		if(!e.isCancelled())
+		{
+			if(e.getBlock().getState() instanceof Sign)
+			{
+				if(BungeeSigns.getInstance().getConfigData().containsSign(e.getBlock()))
+				{
+					if(e.getPlayer().hasPermission("bungeesigns.destroy"))
+					{
+						BungeeSign ssign = BungeeSigns.getInstance().getConfigData().getSignFromLocation(e.getBlock().getLocation());
+						BungeeSignsDestroyEvent event = new BungeeSignsDestroyEvent(e.getPlayer(), ssign);
+						Bukkit.getPluginManager().callEvent(event);
+						
+						if(!event.isCancelled())
+						{
+							BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock());
+							e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
+						}
+					}
+					else
+					{
+						e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+						e.setCancelled(true);
+					}
 				}
 			}
 		}
