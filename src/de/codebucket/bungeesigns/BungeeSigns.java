@@ -56,7 +56,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				sign.update(true);
 				sign.setLine(1, "BungeeSigns");
 				sign.update(true);
-				sign.setLine(2, "Version 1.5");
+				sign.setLine(2, "Version 1.7");
 				sign.update(true);
 				sign.setLine(3, "---------------");
 				sign.update(true);
@@ -200,8 +200,8 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				alertOperators(sender, "§e§oReloading BungeeSigns...§7§o");
 				sender.sendMessage(pre + "§eReloading BungeeSigns...");
 				reloadConfig();
-				Bukkit.getPluginManager().disablePlugin(this);
-				Bukkit.getPluginManager().enablePlugin(this);
+				/*Bukkit.getPluginManager().disablePlugin(this);
+				Bukkit.getPluginManager().enablePlugin(this);*/
 				alertOperators(sender, "§a§oBungeeSigns sucessfully reloaded.§7§o");
 				sender.sendMessage(pre + "§aPlugin sucessfully reloaded.");
 				return true;

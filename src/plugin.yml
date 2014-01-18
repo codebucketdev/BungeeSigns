@@ -1,8 +1,8 @@
 name: BungeeSigns
 author: Codebucket
-version: 1.3 Release
+version: 1.7 Release
 main: de.codebucket.bungeesigns.BungeeSigns
-website: http://www.dcminecraft.jimdo.de
+website: http://www.codebucket.de
 commands:
      bsreload:
           description: Reloads the plugin.

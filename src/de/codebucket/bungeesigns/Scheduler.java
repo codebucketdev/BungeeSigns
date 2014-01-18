@@ -1,6 +1,5 @@
 package de.codebucket.bungeesigns;
 
-import org.apache.commons.lang.UnhandledException;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,19 +38,15 @@ public class Scheduler implements Listener
 			@Override
 			public void run() 
 			{
-				try
+				for(ServerInfo server : plugin.getConfigData().getServers())
 				{
-					for(ServerInfo server : plugin.getConfigData().getServers())
+					BungeeSignsPingEvent event = new BungeeSignsPingEvent(server);
+					Bukkit.getPluginManager().callEvent(event);
+					if(!event.isCancelled())
 					{
-						BungeeSignsPingEvent event = new BungeeSignsPingEvent(server);
-						Bukkit.getPluginManager().callEvent(event);
-						if(!event.isCancelled())
-						{
-							server.ping();
-						}
+						server.ping();
 					}
 				}
-				catch(UnhandledException e){}
 			}
 		};
 		
@@ -66,19 +61,15 @@ public class Scheduler implements Listener
 			@Override
 			public void run()
 			{
-				try
+				for(BungeeSign sign : plugin.getConfigData().getSigns())
 				{
-					for(BungeeSign sign : plugin.getConfigData().getSigns())
+					BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(sign);
+					Bukkit.getPluginManager().callEvent(event);
+					if(!event.isCancelled())
 					{
-						BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(sign);
-						Bukkit.getPluginManager().callEvent(event);
-						if(!event.isCancelled())
-						{
-							sign.updateSign();
-						}
+						sign.updateSign();
 					}
 				}
-				catch(UnhandledException e){}
 			}
 		};
 		

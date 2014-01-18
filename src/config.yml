@@ -5,15 +5,16 @@
 # |__/ |__/ |  / |__/ |__  |__   __/ | |__/ |  /  __/ 
 #                __/                   __/            
 #
-# BungeeSigns Version 1.3 Release
+# BungeeSigns Version 1.7 Release
 # http://www.codebucket.de/plugins/BungeeSigns
 # ------------------------------------------------------------------------
 
-logConsole: true
-
-interval: 5
-timeout: 4000
-cooldown: 5
+options:
+  logConsole: true
+  use-cooldown: 5
+  sign-updates: 100
+  ping-interval: 5
+  connect-timeout: 4000
 
 servers:
   pvp:

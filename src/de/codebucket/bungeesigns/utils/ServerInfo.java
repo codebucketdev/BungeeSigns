@@ -277,9 +277,9 @@ public class ServerInfo
 			try 
 			{
 				ServerResponse response = ping.fetchData();
-				this.setVersion(response.getVersion().getName());
+				this.setVersion(formatVersion(response.getVersion().getName()));
 				this.setProtocol(response.getVersion().getProtocol());
-				this.setMotd(response.getDescription());
+				this.setMotd(response.getDescription().replace("┬º", "§"));
 				this.setPlayerCount(response.getPlayers().getOnline());
 				this.setMaxPlayers(response.getPlayers().getMax());
 				this.setPingStart(pingStartTime);
@@ -320,6 +320,25 @@ public class ServerInfo
 	        this.setPingEnd(System.currentTimeMillis());
 	        this.setOnline(true);
 		}
+	}
+	
+	private String formatVersion(String version)
+	{
+		char[] numbers = "0123456789".toCharArray();
+		for(int i = 0; i < version.length(); i++)
+		{
+			char c = version.charAt(i);
+			for(char ch : numbers)
+			{
+				if(ch == c)
+				{
+					version = version.substring(i);
+					break;
+				}
+			}
+		}
+		
+		return version;
 	}
 	
 	private String getBukkitVersion()

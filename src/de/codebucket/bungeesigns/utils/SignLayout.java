@@ -95,7 +95,7 @@ public class SignLayout
 				line = line.replaceAll("%address%", server.getAddress());
 				line = line.replaceAll("%port%", String.valueOf(server.getPort()));
 				line = line.replaceAll("%ping%", String.valueOf(server.getPingDelay()));
-				line = line.replaceAll("%version%", server.getProtocol());		
+				line = line.replaceAll("%version%", server.getVersion());		
 				
 				for(CustomVariable var : BungeeSigns.getInstance().getConfigData().getVariables())
 				{
