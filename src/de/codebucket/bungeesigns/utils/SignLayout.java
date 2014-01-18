@@ -77,7 +77,7 @@ public class SignLayout
 		return this.cooldownMessage;
 	}
 	
-	public List<String> parseLayout(ServerPing server)
+	public List<String> parseLayout(ServerInfo server)
 	{
 		List<String> layout = new ArrayList<>();
 		
@@ -137,7 +137,7 @@ public class SignLayout
 		return layout;
 	}
 	
-	public String parseOfflineMessage(ServerPing server)
+	public String parseOfflineMessage(ServerInfo server)
 	{
 		String line = this.offlineMessage;
 		line = line.replaceAll("%name%", server.getName());

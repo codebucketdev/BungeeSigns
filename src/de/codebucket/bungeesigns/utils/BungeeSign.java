@@ -137,7 +137,7 @@ public class BungeeSign
 				Block b = location.getBlock();
 				if(b.getState() instanceof Sign)
 				{
-					ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(this.server);
+					ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(this.server);
 					SignLayout layout = BungeeSigns.getInstance().getConfigData().getLayout(this.layout);
 					
 					if(server != null)

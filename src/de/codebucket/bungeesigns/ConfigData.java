@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import de.codebucket.bungeesigns.utils.CustomVariable;
 import de.codebucket.bungeesigns.utils.LocationSerialiser;
 import de.codebucket.bungeesigns.utils.SignLayout;
-import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.ServerInfo;
 import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class ConfigData 
@@ -26,12 +26,13 @@ public class ConfigData
 	private FileConfiguration config;
 	private FileConfiguration layout;
 	private FileConfiguration sign;
-	private List<ServerPing> servers = new ArrayList<>();
+	private List<ServerInfo> servers = new ArrayList<>();
 	private List<BungeeSign> signs = new ArrayList<>();
 	private List<CustomVariable> variables = new ArrayList<>();
 	private List<Block> blocks = new ArrayList<>();
 	private Map<String, SignLayout> layouts = new HashMap<>();
 	private long cooldown;
+	private long signUpdates;
 	private int pingTimeout;
 	private int pingInterval;
 	
@@ -126,10 +127,11 @@ public class ConfigData
 	
 	private void loadSettings()
 	{
-		this.log = this.config.getBoolean("logConsole");
-		this.pingInterval = this.config.getInt("interval");
-		this.pingTimeout = this.config.getInt("timeout");
-		this.cooldown = (this.config.getInt("cooldown") * 1000);
+		this.log = this.config.getBoolean("options.logConsole");
+		this.cooldown = (this.config.getInt("options.use-cooldown") * 1000);
+		this.signUpdates = this.config.getInt("options.sign-updates");
+		this.pingInterval = this.config.getInt("options.ping-interval");
+		this.pingTimeout = this.config.getInt("options.ping-timeout");
 	}
 	
 	private void loadServers()
@@ -144,7 +146,7 @@ public class ConfigData
 			String ip = address[0];
 			String port = address[1];
 			
-			ServerPing serverping = new ServerPing(server, displayname, ip, Integer.valueOf(port), this.pingTimeout);
+			ServerInfo serverping = new ServerInfo(server, displayname, ip, Integer.valueOf(port), this.pingTimeout);
 			serverping.resetPingDelay();
 			this.servers.add(serverping);
 		}
@@ -206,9 +208,9 @@ public class ConfigData
 		return this.layouts.get(layout);
 	}
 	
-	public ServerPing getServer(String server)
+	public ServerInfo getServer(String server)
 	{
-		for(ServerPing info : this.servers)
+		for(ServerInfo info : this.servers)
 		{
 			if(info.getName().equals(server))
 			{
@@ -273,12 +275,12 @@ public class ConfigData
 	    }
 	}
 	
-	public List<ServerPing> getServers()
+	public List<ServerInfo> getServers()
 	{
 		return this.servers;
 	}
 	
-	public void setServers(List<ServerPing> servers)
+	public void setServers(List<ServerInfo> servers)
 	{
 	    this.servers = servers;
 	}
@@ -323,6 +325,16 @@ public class ConfigData
 		this.blocks = blocks;
 	}
 	
+	public long getUpdateInterval() 
+	{
+		return signUpdates;
+	}
+
+	public void setUpdateInterval(long signUpdates) 
+	{
+		this.signUpdates = signUpdates;
+	}
+
 	public int getPingInterval()
 	{
 		return this.pingInterval;

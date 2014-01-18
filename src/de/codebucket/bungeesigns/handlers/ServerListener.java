@@ -16,7 +16,7 @@ import de.codebucket.bungeesigns.BungeeSigns;
 import de.codebucket.bungeesigns.event.BungeeSignsCreateEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsDestroyEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsInteractEvent;
-import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.ServerInfo;
 import de.codebucket.bungeesigns.utils.BungeeSign;
 
 //ONE SECOND = 1000ms
@@ -39,7 +39,7 @@ public class ServerListener implements Listener
 			{
 				if(e.getPlayer().hasPermission("bungeesigns.create"))
 				{
-					ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
+					ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(e.getLine(1));
 					String layout = e.getLine(2);
 					
 					if (layout.equalsIgnoreCase("")) 
@@ -130,7 +130,7 @@ public class ServerListener implements Listener
 						{
 							if(ssign != null && !ssign.isBroken() && ssign.getLocation().equals(e.getClickedBlock().getLocation()))
 							{
-								ServerPing server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
+								ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
 								if(server != null)
 								{
 									e.setCancelled(true);

@@ -1,12 +1,13 @@
 package de.codebucket.bungeesigns;
 
+import org.apache.commons.lang.UnhandledException;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.codebucket.bungeesigns.event.BungeeSignsPingEvent;
 import de.codebucket.bungeesigns.event.BungeeSignsUpdateEvent;
-import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.ServerInfo;
 import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class Scheduler implements Listener
@@ -38,20 +39,24 @@ public class Scheduler implements Listener
 			@Override
 			public void run() 
 			{
-				for(ServerPing server : plugin.getConfigData().getServers())
+				try
 				{
-					BungeeSignsPingEvent event = new BungeeSignsPingEvent(server);
-					Bukkit.getPluginManager().callEvent(event);
-					if(!event.isCancelled())
+					for(ServerInfo server : plugin.getConfigData().getServers())
 					{
-						server.ping();
+						BungeeSignsPingEvent event = new BungeeSignsPingEvent(server);
+						Bukkit.getPluginManager().callEvent(event);
+						if(!event.isCancelled())
+						{
+							server.ping();
+						}
 					}
 				}
+				catch(UnhandledException e){}
 			}
 		};
 		
 		pingScheduler = runnable;
-		PID_PING = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, runnable, 100L, BungeeSigns.getInstance().getConfigData().getPingInterval()*20L);
+		PID_PING = Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, runnable, 100L, BungeeSigns.getInstance().getConfigData().getPingInterval());
 	}
 	
 	public void startSignScheduler()
@@ -61,20 +66,24 @@ public class Scheduler implements Listener
 			@Override
 			public void run()
 			{
-				for(BungeeSign sign : plugin.getConfigData().getSigns())
+				try
 				{
-					BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(sign);
-					Bukkit.getPluginManager().callEvent(event);
-					if(!event.isCancelled())
+					for(BungeeSign sign : plugin.getConfigData().getSigns())
 					{
-						sign.updateSign();
+						BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(sign);
+						Bukkit.getPluginManager().callEvent(event);
+						if(!event.isCancelled())
+						{
+							sign.updateSign();
+						}
 					}
 				}
+				catch(UnhandledException e){}
 			}
 		};
 		
 		signScheduler = runnable;
-		PID_SIGN = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, runnable, 40L, BungeeSigns.getInstance().getConfigData().getPingInterval()*20L);
+		PID_SIGN = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, runnable, 40L, BungeeSigns.getInstance().getConfigData().getUpdateInterval());
 	}
 	
 	public BukkitRunnable getPingScheduler()

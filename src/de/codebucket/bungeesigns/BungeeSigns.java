@@ -52,32 +52,118 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
-				sign.setLine(0, "");
-				sign.setLine(1, "Loading...");
-				sign.setLine(2, "");
-				sign.setLine(3, "");
+				sign.setLine(0, "---------------");
+				sign.update(true);
+				sign.setLine(1, "BungeeSigns");
+				sign.update(true);
+				sign.setLine(2, "Version 1.5");
+				sign.update(true);
+				sign.setLine(3, "---------------");
 				sign.update(true);
 			}
 		}
 		
-		//START SCHEDULERS
-		scheduler.startSignScheduler();
-		scheduler.startPingScheduler();
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				for (int i = 0; i < data.getSigns().size(); i++) 
+				{
+					BungeeSign s = data.getSigns().get(i);
+					if(s.getLocation().getBlock().getState() instanceof Sign)
+					{
+						Sign sign = (Sign)s.getLocation().getBlock().getState();
+						sign.setLine(0, "---------------");
+						sign.update(true);
+						sign.setLine(1, "Loading");
+						sign.update(true);
+						sign.setLine(2, "Servers...");
+						sign.update(true);
+						sign.setLine(3, "---------------");
+						sign.update(true);
+					}
+				}
+			}
+		}, 3*20L);
 		
-		//EVENTS
-		Bukkit.getPluginManager().registerEvents(new ServerListener(this), this);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				for (int i = 0; i < data.getSigns().size(); i++) 
+				{
+					BungeeSign s = data.getSigns().get(i);
+					if(s.getLocation().getBlock().getState() instanceof Sign)
+					{
+						Sign sign = (Sign)s.getLocation().getBlock().getState();
+						sign.setLine(0, "---------------");
+						sign.update(true);
+						sign.setLine(1, "Loading");
+						sign.update(true);
+						sign.setLine(2, "Layouts...");
+						sign.update(true);
+						sign.setLine(3, "---------------");
+						sign.update(true);
+					}
+				}
+			}
+		}, 4*20L);
 		
-		//BUNGEECORD API
-		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				for (int i = 0; i < data.getSigns().size(); i++) 
+				{
+					BungeeSign s = data.getSigns().get(i);
+					if(s.getLocation().getBlock().getState() instanceof Sign)
+					{
+						Sign sign = (Sign)s.getLocation().getBlock().getState();
+						sign.setLine(0, "---------------");
+						sign.update(true);
+						sign.setLine(1, "Please wait");
+						sign.update(true);
+						sign.setLine(2, "Getting data...");
+						sign.update(true);
+						sign.setLine(3, "---------------");
+						sign.update(true);
+					}
+				}
+			}
+		}, 5*20L);
+		
+		long time = (long) (5.5*20L);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				//START SCHEDULERS
+				scheduler.startSignScheduler();
+				scheduler.startPingScheduler();
+				
+				//EVENTS
+				Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
+				
+				//BUNGEECORD API
+				getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
+				getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
+			}
+		}, time);
 		
 		//HINWEIS
-		getLogger().info("BungeeSigns Version 1.3 by Codebucket");
+		getLogger().info("BungeeSigns Version 1.7 by Codebucket");
 	}
 	
 	@Override
 	public void onDisable() 
 	{
+		//STOP SCHEDULERS
+		scheduler.stopSchedulers();
+		
 		//RESET SIGNS
 		for (int i = 0; i < data.getSigns().size(); i++) 
 		{
@@ -86,8 +172,11 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
 				sign.setLine(0, "");
-				sign.setLine(1, "Loading...");
+				sign.update(true);
+				sign.setLine(1, "");
+				sign.update(true);
 				sign.setLine(2, "");
+				sign.update(true);
 				sign.setLine(3, "");
 				sign.update(true);
 			}
@@ -95,9 +184,6 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		
 		//UNLOAD CONFIG
 		data.unloadConfig();
-				
-		//STOP SCHEDULERS
-		scheduler.stopSchedulers();	
 		
 		//HINWEIS
 		getLogger().info("BungeeSigns disabled!");

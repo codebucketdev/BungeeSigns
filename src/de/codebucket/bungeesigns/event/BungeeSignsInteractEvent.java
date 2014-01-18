@@ -5,7 +5,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.codebucket.bungeesigns.utils.ServerPing;
+import de.codebucket.bungeesigns.utils.ServerInfo;
 import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class BungeeSignsInteractEvent extends Event implements Cancellable
@@ -14,11 +14,11 @@ public class BungeeSignsInteractEvent extends Event implements Cancellable
 	
 	private Player player;
 	private BungeeSign sign;
-	private ServerPing info;
+	private ServerInfo info;
 
 	private boolean cancelled;
 	
-	public BungeeSignsInteractEvent(Player player, BungeeSign sign, ServerPing info)
+	public BungeeSignsInteractEvent(Player player, BungeeSign sign, ServerInfo info)
 	{
 		this.player = player;
 		this.sign = sign;
@@ -45,7 +45,7 @@ public class BungeeSignsInteractEvent extends Event implements Cancellable
 		return sign;
 	}
 	
-	public ServerPing getServer() {
+	public ServerInfo getServer() {
 		return info;
 	}
 	
