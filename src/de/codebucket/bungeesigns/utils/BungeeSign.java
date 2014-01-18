@@ -156,7 +156,7 @@ public class BungeeSign
 						{
 							Sign sign = (Sign)b.getState();
 							BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Can't find layout '" + this.layout + "'.");
-							String[] error = { "ง4ERROR:", "ง6Layout" , "งe'" + this.layout + "'", "ง6not found!" };
+							String[] error = { "ยง4ERROR:", "ยง6Layout" , "ยงe'" + this.layout + "'", "ยง6not found!" };
 							signError(sign, error);
 							this.broken = true;
 						}
@@ -165,7 +165,7 @@ public class BungeeSign
 					{
 						Sign sign = (Sign)b.getState();
 						BungeeSigns.getInstance().logConsole(Level.WARNING, "[BungeeSigns] Can't find server '" + this.server + "'.");
-						String[] error = { "ง4ERROR:", "ง6Server" , "งe'" + this.server + "'", "ง6not found!" };
+						String[] error = { "ยง4ERROR:", "ยง6Server" , "ยงe'" + this.server + "'", "ยง6not found!" };
 						signError(sign, error);
 						this.broken = true;
 					}

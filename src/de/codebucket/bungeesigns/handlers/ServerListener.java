@@ -58,24 +58,24 @@ public class ServerListener implements Listener
 				        	if(!event.isCancelled())
 				        	{
 				        		BungeeSigns.getInstance().getConfigData().addSign(e.getBlock(), server.getName(), layout);
-				        		e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
+				        		e.getPlayer().sendMessage(BungeeSigns.pre + "Â§aSign sucessfully created.");
 				        	}
 				        }
 				        else
 				        {
-				        	e.getPlayer().sendMessage(BungeeSigns.pre + "§cServer '" + e.getLine(1) + "' not exists!");
+				        	e.getPlayer().sendMessage(BungeeSigns.pre + "Â§cServer '" + e.getLine(1) + "' not exists!");
 				        	e.getBlock().breakNaturally();
 				        }
 				    }
 					else
 					{
-						e.getPlayer().sendMessage(BungeeSigns.pre + "§cLayout '" + e.getLine(2) + "' not exists!");
+						e.getPlayer().sendMessage(BungeeSigns.pre + "Â§cLayout '" + e.getLine(2) + "' not exists!");
 						e.getBlock().breakNaturally();
 					}
 				}
 				else
 				{
-					e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+					e.getPlayer().sendMessage(BungeeSigns.pre + "Â§cYou don't have permission to do this!");
 					e.getBlock().breakNaturally();
 				}
 			}
@@ -101,16 +101,20 @@ public class ServerListener implements Listener
 						if(!event.isCancelled())
 						{
 							BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock());
-							e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
+							e.getPlayer().sendMessage(BungeeSigns.pre + "Â§aSign sucessfully destroyed.");
 						}
 					}
 					else
 					{
-						e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+						e.getPlayer().sendMessage(BungeeSigns.pre + "Â§cYou don't have permission to do this!");
 						e.setCancelled(true);
 					}
 				}
 			}
+		}
+		else
+		{
+			e.setCancelled(true);
 		}
 	}
 	

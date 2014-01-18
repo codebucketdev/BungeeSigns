@@ -21,7 +21,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 	private static ConfigData data;
 	private static Scheduler scheduler;
 	
-	public static String pre = "§7[§3BungeeSigns§7] §r";
+	public static String pre = "Â§7[Â§3BungeeSignsÂ§7] Â§r";
 	
 	@Override
 	public void onEnable() 
@@ -197,18 +197,18 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		{
 			if(sender.hasPermission("bungeesigns.reload"))
 			{
-				alertOperators(sender, "§e§oReloading BungeeSigns...§7§o");
-				sender.sendMessage(pre + "§eReloading BungeeSigns...");
+				alertOperators(sender, "Â§eÂ§oReloading BungeeSigns...Â§7Â§o");
+				sender.sendMessage(pre + "Â§eReloading BungeeSigns...");
 				reloadConfig();
 				/*Bukkit.getPluginManager().disablePlugin(this);
 				Bukkit.getPluginManager().enablePlugin(this);*/
-				alertOperators(sender, "§a§oBungeeSigns sucessfully reloaded.§7§o");
-				sender.sendMessage(pre + "§aPlugin sucessfully reloaded.");
+				alertOperators(sender, "Â§aÂ§oBungeeSigns sucessfully reloaded.Â§7Â§o");
+				sender.sendMessage(pre + "Â§aPlugin sucessfully reloaded.");
 				return true;
 			}
 			else
 			{
-				sender.sendMessage(pre + "§cYou don't have permission to execute this command!");
+				sender.sendMessage(pre + "Â§cYou don't have permission to execute this command!");
 				return true;
 			}
 		}
@@ -238,7 +238,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			{
 				if(!sender.getName().equals(player.getName()))
 				{
-					player.sendMessage("§7§o["+sender.getName()+": "+alert+"]");
+					player.sendMessage("Â§7Â§o["+sender.getName()+": "+alert+"]");
 				}
 			}
 		}
