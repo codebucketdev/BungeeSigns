@@ -13,11 +13,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.codebucket.bungeesigns.utils.CustomVariable;
+import de.codebucket.bungeesigns.ping.ServerInfo;
+import de.codebucket.bungeesigns.sign.BungeeSign;
+import de.codebucket.bungeesigns.sign.CustomVariable;
+import de.codebucket.bungeesigns.sign.SignLayout;
 import de.codebucket.bungeesigns.utils.LocationSerialiser;
-import de.codebucket.bungeesigns.utils.SignLayout;
-import de.codebucket.bungeesigns.utils.ServerInfo;
-import de.codebucket.bungeesigns.utils.BungeeSign;
 
 public class ConfigData 
 {

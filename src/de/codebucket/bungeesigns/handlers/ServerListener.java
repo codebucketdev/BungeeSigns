@@ -2,7 +2,6 @@ package de.codebucket.bungeesigns.handlers;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,11 +12,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.codebucket.bungeesigns.BungeeSigns;
-import de.codebucket.bungeesigns.event.BungeeSignsCreateEvent;
-import de.codebucket.bungeesigns.event.BungeeSignsDestroyEvent;
-import de.codebucket.bungeesigns.event.BungeeSignsInteractEvent;
-import de.codebucket.bungeesigns.utils.ServerInfo;
-import de.codebucket.bungeesigns.utils.BungeeSign;
+import de.codebucket.bungeesigns.ping.ServerInfo;
+import de.codebucket.bungeesigns.sign.BungeeSign;
 
 //ONE SECOND = 1000ms
 public class ServerListener implements Listener
@@ -51,15 +47,8 @@ public class ServerListener implements Listener
 				    {
 				        if (server != null) 
 				        {
-				        	BungeeSign ssign = new BungeeSign(server.getName(), e.getBlock().getLocation(), layout);
-				        	BungeeSignsCreateEvent event = new BungeeSignsCreateEvent(e.getPlayer(), ssign);
-				        	Bukkit.getPluginManager().callEvent(event);
-				        	
-				        	if(!event.isCancelled())
-				        	{
-				        		BungeeSigns.getInstance().getConfigData().addSign(e.getBlock(), server.getName(), layout);
-				        		e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
-				        	}
+				        	BungeeSigns.getInstance().getConfigData().addSign(e.getBlock(), server.getName(), layout);
+				        	e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
 				        }
 				        else
 				        {
@@ -94,15 +83,8 @@ public class ServerListener implements Listener
 				{
 					if(e.getPlayer().hasPermission("bungeesigns.destroy"))
 					{
-						BungeeSign ssign = BungeeSigns.getInstance().getConfigData().getSignFromLocation(e.getBlock().getLocation());
-						BungeeSignsDestroyEvent event = new BungeeSignsDestroyEvent(e.getPlayer(), ssign);
-						Bukkit.getPluginManager().callEvent(event);
-						
-						if(!event.isCancelled())
-						{
-							BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock());
-							e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
-						}
+						BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock());
+						e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
 					}
 					else
 					{
@@ -122,27 +104,24 @@ public class ServerListener implements Listener
 	@EventHandler
 	public void interactBungeeSign(PlayerInteractEvent e)
 	{
-		if(e.getAction() == Action.RIGHT_CLICK_BLOCK)
+		if(!e.isCancelled())
 		{
-			if(e.getClickedBlock().getState() instanceof Sign)
+			if(e.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
-				if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(e.getClickedBlock()))
+				if(e.getClickedBlock().getState() instanceof Sign)
 				{
-					if(e.getPlayer().hasPermission("bungeesigns.use"))
+					if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(e.getClickedBlock()))
 					{
-						for(BungeeSign ssign : BungeeSigns.getInstance().getConfigData().getSigns())
+						if(e.getPlayer().hasPermission("bungeesigns.use"))
 						{
-							if(ssign != null && !ssign.isBroken() && ssign.getLocation().equals(e.getClickedBlock().getLocation()))
+							for(BungeeSign ssign : BungeeSigns.getInstance().getConfigData().getSigns())
 							{
-								ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
-								if(server != null)
+								if(ssign != null && !ssign.isBroken() && ssign.getLocation().equals(e.getClickedBlock().getLocation()))
 								{
-									e.setCancelled(true);
-									BungeeSignsInteractEvent event = new BungeeSignsInteractEvent(e.getPlayer(), ssign, server);
-									Bukkit.getPluginManager().callEvent(event);
-									
-									if(!event.isCancelled())
+									ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(ssign.getServer());
+									if(server != null)
 									{
+										e.setCancelled(true);
 										if(BungeeSigns.getInstance().getConfigData().getLayout(ssign.getLayout()).isTeleport())
 										{
 											if(server.isOnline())

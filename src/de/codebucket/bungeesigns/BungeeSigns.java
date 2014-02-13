@@ -13,14 +13,16 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.mcstats.Metrics;
 
 import de.codebucket.bungeesigns.handlers.ServerListener;
-import de.codebucket.bungeesigns.utils.BungeeSign;
+import de.codebucket.bungeesigns.scheduler.PingScheduler;
+import de.codebucket.bungeesigns.scheduler.SignScheduler;
+import de.codebucket.bungeesigns.sign.BungeeSign;
 
 public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 {
+	private PingScheduler ping;
+	private SignScheduler sign;
 	private static BungeeSigns instance;
 	private static ConfigData data;
-	private static Scheduler scheduler;
-	
 	public static String pre = "§7[§3BungeeSigns§7] §r";
 	
 	@Override
@@ -40,7 +42,9 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		//LOAD INSTANCES	
 		instance = this;
 		data = new ConfigData(this);
-		scheduler = new Scheduler(this);
+		pre = "§7[§3BungeeSigns§7] §r";
+		this.ping = new PingScheduler(this);
+		this.sign = new SignScheduler(this);
 		
 		//LOAD DATABASES
 		data.loadConfig();
@@ -56,7 +60,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				sign.update(true);
 				sign.setLine(1, "BungeeSigns");
 				sign.update(true);
-				sign.setLine(2, "Version 1.7");
+				sign.setLine(2, "Version 1.8");
 				sign.update(true);
 				sign.setLine(3, "---------------");
 				sign.update(true);
@@ -142,10 +146,8 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			public void run() 
 			{
 				//START SCHEDULERS
-				scheduler.startSignScheduler();
-				scheduler.startPingScheduler();
-				
-				//EVENTS
+				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
+				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
 				Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
 				
 				//BUNGEECORD API
@@ -155,15 +157,12 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		}, time);
 		
 		//HINWEIS
-		getLogger().info("BungeeSigns Version 1.7 by Codebucket");
+		getLogger().info("BungeeSigns Version 1.8 by Codebucket");
 	}
 	
 	@Override
 	public void onDisable() 
 	{
-		//STOP SCHEDULERS
-		scheduler.stopSchedulers();
-		
 		//RESET SIGNS
 		for (int i = 0; i < data.getSigns().size(); i++) 
 		{
@@ -200,8 +199,8 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				alertOperators(sender, "§e§oReloading BungeeSigns...§7§o");
 				sender.sendMessage(pre + "§eReloading BungeeSigns...");
 				reloadConfig();
-				/*Bukkit.getPluginManager().disablePlugin(this);
-				Bukkit.getPluginManager().enablePlugin(this);*/
+				Bukkit.getPluginManager().disablePlugin(this);
+				Bukkit.getPluginManager().enablePlugin(this);
 				alertOperators(sender, "§a§oBungeeSigns sucessfully reloaded.§7§o");
 				sender.sendMessage(pre + "§aPlugin sucessfully reloaded.");
 				return true;
@@ -223,11 +222,6 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 	public ConfigData getConfigData()
 	{
 		return data;
-	}
-	
-	public Scheduler getScheduler()
-	{
-		return scheduler;
 	}
 	
 	private void alertOperators(org.bukkit.command.CommandSender sender, String alert)
