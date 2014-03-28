@@ -2,12 +2,14 @@ package de.codebucket.bungeesigns.scheduler;
 
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import de.codebucket.bungeesigns.BungeeSigns;
+import de.codebucket.bungeesigns.event.BungeeSignsPingEvent;
 import de.codebucket.bungeesigns.ping.ServerInfo;
 import de.codebucket.bungeesigns.ping.ServerPing;
 import de.codebucket.bungeesigns.ping.ServerPing.StatusResponse;
@@ -24,23 +26,29 @@ public class PingScheduler implements Runnable
 	@Override
 	public void run()
 	{
-		for(ServerInfo server : plugin.getConfigData().getServers())
+		final List<ServerInfo> servers = plugin.getConfigData().getServers();
+		BungeeSignsPingEvent event = new BungeeSignsPingEvent(servers);
+		Bukkit.getPluginManager().callEvent(event);
+		if(!event.isCancelled())
 		{
-			if(!server.isLocal())
+			for(ServerInfo server : event.getServers())
 			{
-				pingAsync(server);
-			}
-			else
-			{
-				ServerListPingEvent ping = new ServerListPingEvent(new InetSocketAddress(Bukkit.getIp(), Bukkit.getPort()).getAddress(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().length, Bukkit.getMaxPlayers());
-				Bukkit.getPluginManager().callEvent(ping);
-				server.setProtocol(getBukkitVersion());
-				server.setMotd(ping.getMotd());
-				server.setPlayerCount(ping.getNumPlayers());
-				server.setMaxPlayers(ping.getMaxPlayers());
-				server.setPingStart(System.currentTimeMillis());
-				server.setPingEnd(System.currentTimeMillis());
-		        server.setOnline(true);
+				if(!server.isLocal())
+				{
+					pingAsync(server);
+				}
+				else
+				{
+					ServerListPingEvent ping = new ServerListPingEvent(new InetSocketAddress(Bukkit.getIp(), Bukkit.getPort()).getAddress(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().length, Bukkit.getMaxPlayers());
+					Bukkit.getPluginManager().callEvent(ping);
+					server.setProtocol(getBukkitVersion());
+					server.setMotd(ping.getMotd());
+					server.setPlayerCount(ping.getNumPlayers());
+					server.setMaxPlayers(ping.getMaxPlayers());
+					server.setPingStart(System.currentTimeMillis());
+					server.setPingEnd(System.currentTimeMillis());
+			        server.setOnline(true);
+				}
 			}
 		}
 		

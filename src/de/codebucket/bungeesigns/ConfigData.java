@@ -177,14 +177,13 @@ public class ConfigData
 		for(String sign : this.sign.getStringList("signs"))
 		{
 			Location location = LocationSerialiser.stringToLocationSign(sign);
-			String server = LocationSerialiser.getServerFromSign(sign);
-			String layout = LocationSerialiser.getLayoutFromSign(sign);
+			ServerInfo server = getServer(LocationSerialiser.getServerFromSign(sign));
+			SignLayout layout = getLayout(LocationSerialiser.getLayoutFromSign(sign));
 			
-			Block b = location.getBlock();
+			Block b = location.getBlock();			
+			BungeeSign bsign = new BungeeSign(server, location, layout);			
+			this.signs.add(bsign);
 			this.blocks.add(b);
-			
-			BungeeSign serversign = new BungeeSign(server, location, layout);			
-			this.signs.add(serversign);
 		}
 	}
 	
@@ -380,12 +379,12 @@ public class ConfigData
 		}
 	}
 	
-	public void addSign(Block b, String server, String layout)
+	public void addSign(Location location, ServerInfo server, SignLayout layout)
 	{
-		String index = LocationSerialiser.locationSignToString(b.getLocation(), server, layout);
+		String index = LocationSerialiser.locationSignToString(location, server.getName(), layout.getName());
 		List<String> list = this.sign.getStringList("signs");
 		list.add(index);
-		this.sign.set("signs", list);
+		sign.set("signs", list);
 		
 		try 
 		{
@@ -396,20 +395,18 @@ public class ConfigData
 			e.printStackTrace();
 		}
 		
-		BungeeSign ssign = new BungeeSign(server, b.getLocation(), layout);
-		signs.add(ssign);
-		blocks.add(b);
+		blocks.add(location.getBlock());
+		BungeeSign bsign = new BungeeSign(server, location, layout);
+		signs.add(bsign);
 	}
 	
-	public void removeSign(Block b)
+	public void removeSign(Location location)
 	{
-		Location location;
 		for(BungeeSign sign : signs)
 		{
-			if(b.getLocation().equals(sign.getLocation()))
+			if(location.equals(sign.getLocation()))
 			{
-				location = sign.getLocation();
-				String index = LocationSerialiser.locationSignToString(location, sign.getServer(), sign.getLayout());
+				String index = LocationSerialiser.locationSignToString(location, sign.getServer().getName(), sign.getLayout().getName());
 				List<String> list = this.sign.getStringList("signs");
 				list.remove(index);
 				this.sign.set("signs", list);
@@ -423,8 +420,8 @@ public class ConfigData
 					e.printStackTrace();
 				}
 				
+				blocks.remove(location);
 				signs.remove(sign);
-				blocks.remove(b);
 				break;
 			}
 		}

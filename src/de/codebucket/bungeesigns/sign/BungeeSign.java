@@ -1,8 +1,5 @@
 package de.codebucket.bungeesigns.sign;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -10,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
 
 import de.codebucket.bungeesigns.BungeeSigns;
 import de.codebucket.bungeesigns.ping.ServerInfo;
@@ -23,11 +19,11 @@ public class BungeeSign
 	private int z;
 	
 	private String id;
-	private String server;
-	private String layout;
+	private ServerInfo server;
+	private SignLayout layout;
 	private boolean broken;
 	
-	public BungeeSign(String server, Location location, String layout)
+	public BungeeSign(ServerInfo server, Location location, SignLayout layout)
 	{
 		this.world = location.getWorld().getName();
 		this.x = location.getBlockX();
@@ -49,12 +45,12 @@ public class BungeeSign
 		return id;
 	}
 	
-	public void setServer(String server)
+	public void setServer(ServerInfo server)
 	{
 		this.server = server;
 	}
 	
-	public String getServer()
+	public ServerInfo getServer()
 	{
 		return server;
 	}
@@ -112,12 +108,12 @@ public class BungeeSign
 		setZ(location.getBlockZ());
 	}
 	
-	public void setLayout(String layout)
+	public void setLayout(SignLayout layout)
 	{
 		this.layout = layout;
 	}
 	
-	public String getLayout()
+	public SignLayout getLayout()
 	{
 		return layout;
 	}
@@ -138,9 +134,6 @@ public class BungeeSign
 				Block b = location.getBlock();
 				if(b.getState() instanceof Sign)
 				{
-					ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(this.server);
-					SignLayout layout = BungeeSigns.getInstance().getConfigData().getLayout(this.layout);
-					
 					if(server != null)
 					{
 						if(layout != null)
@@ -187,25 +180,6 @@ public class BungeeSign
 			
 			sign.update(true);
 		}
-	}
-	
-	public void teleportPlayer(Player player)
-	{
-		//CONNECT
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(b);
-				
-		try 
-		{
-			out.writeUTF("Connect");
-			out.writeUTF(this.server);
-		} 
-		catch (IOException e1) 
-		{
-			BungeeSigns.getInstance().logConsole(Level.WARNING, player.getName() + ": You'll never see me!");
-		}
-		
-		player.sendPluginMessage(BungeeSigns.getInstance(), "BungeeCord", b.toByteArray());
 	}
 	
 	private String editLine(String text, int num)

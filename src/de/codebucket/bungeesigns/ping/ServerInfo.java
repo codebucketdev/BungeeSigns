@@ -1,8 +1,15 @@
 package de.codebucket.bungeesigns.ping;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import de.codebucket.bungeesigns.BungeeSigns;
 
 public class ServerInfo 
 {
@@ -184,5 +191,23 @@ public class ServerInfo
 	{
 		long result = (this.pingEndTime - this.pingStartTime);
 		return result;
+	}
+	
+	public void teleportPlayer(Player player)
+	{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(b);
+				
+		try 
+		{
+			out.writeUTF("Connect");
+			out.writeUTF(this.name);
+		} 
+		catch (IOException e1) 
+		{
+			BungeeSigns.getInstance().logConsole(Level.WARNING, player.getName() + ": You'll never see me!");
+		}
+		
+		player.sendPluginMessage(BungeeSigns.getInstance(), "BungeeCord", b.toByteArray());
 	}
 }

@@ -13,6 +13,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.mcstats.Metrics;
 
 import de.codebucket.bungeesigns.handlers.ServerListener;
+
 import de.codebucket.bungeesigns.scheduler.PingScheduler;
 import de.codebucket.bungeesigns.scheduler.SignScheduler;
 import de.codebucket.bungeesigns.sign.BungeeSign;
@@ -34,10 +35,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 		} 
-		catch (IOException e) 
-		{
-				
-		}
+		catch (IOException e) {}
 				
 		//LOAD INSTANCES	
 		instance = this;
@@ -50,132 +48,46 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		data.loadConfig();
 		
 		//RESET SIGNS
-		for (int i = 0; i < data.getSigns().size(); i++) 
+		for (int i = 0; i < getConfigData().getSigns().size(); i++) 
 		{
-			BungeeSign s = data.getSigns().get(i);
+			BungeeSign s = getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
-				sign.setLine(0, "---------------");
-				sign.update(true);
-				sign.setLine(1, "BungeeSigns");
-				sign.update(true);
-				sign.setLine(2, "Version 1.8");
-				sign.update(true);
-				sign.setLine(3, "---------------");
+				sign.setLine(0, "");
+				sign.setLine(1, "");
+				sign.setLine(2, "");
+				sign.setLine(3, "");
 				sign.update(true);
 			}
 		}
 		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				for (int i = 0; i < data.getSigns().size(); i++) 
-				{
-					BungeeSign s = data.getSigns().get(i);
-					if(s.getLocation().getBlock().getState() instanceof Sign)
-					{
-						Sign sign = (Sign)s.getLocation().getBlock().getState();
-						sign.setLine(0, "---------------");
-						sign.update(true);
-						sign.setLine(1, "Loading");
-						sign.update(true);
-						sign.setLine(2, "Servers...");
-						sign.update(true);
-						sign.setLine(3, "---------------");
-						sign.update(true);
-					}
-				}
-			}
-		}, 3*20L);
+		//START SCHEDULERS
+		Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
+		Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
+		Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
 		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				for (int i = 0; i < data.getSigns().size(); i++) 
-				{
-					BungeeSign s = data.getSigns().get(i);
-					if(s.getLocation().getBlock().getState() instanceof Sign)
-					{
-						Sign sign = (Sign)s.getLocation().getBlock().getState();
-						sign.setLine(0, "---------------");
-						sign.update(true);
-						sign.setLine(1, "Loading");
-						sign.update(true);
-						sign.setLine(2, "Layouts...");
-						sign.update(true);
-						sign.setLine(3, "---------------");
-						sign.update(true);
-					}
-				}
-			}
-		}, 4*20L);
-		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				for (int i = 0; i < data.getSigns().size(); i++) 
-				{
-					BungeeSign s = data.getSigns().get(i);
-					if(s.getLocation().getBlock().getState() instanceof Sign)
-					{
-						Sign sign = (Sign)s.getLocation().getBlock().getState();
-						sign.setLine(0, "---------------");
-						sign.update(true);
-						sign.setLine(1, "Please wait");
-						sign.update(true);
-						sign.setLine(2, "Getting data...");
-						sign.update(true);
-						sign.setLine(3, "---------------");
-						sign.update(true);
-					}
-				}
-			}
-		}, 5*20L);
-		
-		long time = (long) (5.5*20L);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				//START SCHEDULERS
-				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
-				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
-				Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
-				
-				//BUNGEECORD API
-				getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
-				getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
-			}
-		}, time);
+		//BUNGEECORD API
+		getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
+		getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
 		
 		//HINWEIS
-		getLogger().info("BungeeSigns Version 1.8 by Codebucket");
+		getLogger().info("BungeeSigns Version 2.1 by Codebucket");
 	}
 	
 	@Override
 	public void onDisable() 
 	{
 		//RESET SIGNS
-		for (int i = 0; i < data.getSigns().size(); i++) 
+		for (int i = 0; i < getConfigData().getSigns().size(); i++) 
 		{
-			BungeeSign s = data.getSigns().get(i);
+			BungeeSign s = getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
 				sign.setLine(0, "");
-				sign.update(true);
 				sign.setLine(1, "");
-				sign.update(true);
 				sign.setLine(2, "");
-				sign.update(true);
 				sign.setLine(3, "");
 				sign.update(true);
 			}
@@ -198,7 +110,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			{
 				alertOperators(sender, "§e§oReloading BungeeSigns...§7§o");
 				sender.sendMessage(pre + "§eReloading BungeeSigns...");
-				reloadConfig();
+				this.reloadConfig();
 				Bukkit.getPluginManager().disablePlugin(this);
 				Bukkit.getPluginManager().enablePlugin(this);
 				alertOperators(sender, "§a§oBungeeSigns sucessfully reloaded.§7§o");
