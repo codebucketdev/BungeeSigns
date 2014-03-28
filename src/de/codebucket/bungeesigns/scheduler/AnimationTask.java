@@ -31,21 +31,17 @@ public class AnimationTask
 			@Override
 			public void run() 
 			{
-				for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+				if(line >= 4) return;
+				for (BungeeSign s : plugin.getConfigData().getSigns()) 
 				{
-					BungeeSign s = plugin.getConfigData().getSigns().get(i);
 					if(s.getLocation().getBlock().getState() instanceof Sign)
 					{
-						if(line >= 4) 
-						{
-							return;
-						}
 						Sign sign = (Sign)s.getLocation().getBlock().getState();
 						sign.setLine(line, lines[line]);
 						sign.update(true);
-						line++;
 					}
 				}
+				line++;
 			}
 		}, 0L, 10L);
 		
@@ -61,9 +57,8 @@ public class AnimationTask
 	
 	private void runSecondAnimation()
 	{
-		for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+		for (BungeeSign s : plugin.getConfigData().getSigns()) 
 		{
-			BungeeSign s = plugin.getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -87,9 +82,8 @@ public class AnimationTask
 	
 	private void runThridAnimation()
 	{
-		for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+		for (BungeeSign s : plugin.getConfigData().getSigns()) 
 		{
-			BungeeSign s = plugin.getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -108,21 +102,17 @@ public class AnimationTask
 			@Override
 			public void run() 
 			{
-				for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+				if(pnt >= 3) return;
+				for (BungeeSign s : plugin.getConfigData().getSigns()) 
 				{
-					BungeeSign s = plugin.getConfigData().getSigns().get(i);
 					if(s.getLocation().getBlock().getState() instanceof Sign)
 					{
-						if(pnt >= 3) 
-						{
-							return;
-						}
 						Sign sign = (Sign)s.getLocation().getBlock().getState();
 						sign.setLine(2, sign.getLine(2) + ".");
 						sign.update(true);
-						pnt++;
 					}
 				}
+				pnt++;
 			}
 		}, 5L, 5L);
 		
@@ -138,9 +128,8 @@ public class AnimationTask
 	
 	private void runFourthAnimation()
 	{
-		for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+		for (BungeeSign s : plugin.getConfigData().getSigns()) 
 		{
-			BungeeSign s = plugin.getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -159,21 +148,17 @@ public class AnimationTask
 			@Override
 			public void run() 
 			{
-				for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+				if(pnt >= 3) return;
+				for (BungeeSign s : plugin.getConfigData().getSigns()) 
 				{
-					BungeeSign s = plugin.getConfigData().getSigns().get(i);
 					if(s.getLocation().getBlock().getState() instanceof Sign)
 					{
-						if(pnt >= 3) 
-						{
-							return;
-						}
 						Sign sign = (Sign)s.getLocation().getBlock().getState();
 						sign.setLine(2, sign.getLine(2) + ".");
 						sign.update(true);
-						pnt++;
 					}
 				}
+				pnt++;
 			}
 		}, 5L, 5L);
 		
@@ -189,9 +174,8 @@ public class AnimationTask
 	
 	private void runFifthAnimation()
 	{
-		for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+		for (BungeeSign s : plugin.getConfigData().getSigns()) 
 		{
-			BungeeSign s = plugin.getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
@@ -210,33 +194,47 @@ public class AnimationTask
 			@Override
 			public void run() 
 			{
-				for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+				if(pnt >= 3) 
 				{
-					BungeeSign s = plugin.getConfigData().getSigns().get(i);
-					if(s.getLocation().getBlock().getState() instanceof Sign)
+					for (BungeeSign s : plugin.getConfigData().getSigns()) 
 					{
-						Sign sign = (Sign)s.getLocation().getBlock().getState();
-						if(sign.getLine(2).contains("Getting data"))
+						if(s.getLocation().getBlock().getState() instanceof Sign)
 						{
-							if(pnt >= 3) 
+							Sign sign = (Sign)s.getLocation().getBlock().getState();
+							if(sign.getLine(2).contains("Getting data"))
 							{
 								sign.setLine(2, "Getting data");
 								sign.update(true);
-								pnt = 0;
 							}
 							else
 							{
-								sign.setLine(2, sign.getLine(2) + ".");
-								sign.update(true);
-								pnt++;
+								Bukkit.getScheduler().cancelTask(task.getTaskId());
+								task = null;
 							}
 						}
-						else
+					}
+					pnt = 0;
+				}
+				else
+				{
+					for (BungeeSign s : plugin.getConfigData().getSigns()) 
+					{
+						if(s.getLocation().getBlock().getState() instanceof Sign)
 						{
-							Bukkit.getScheduler().cancelTask(task.getTaskId());
-							task = null;
+							Sign sign = (Sign)s.getLocation().getBlock().getState();
+							if(sign.getLine(2).contains("Getting data"))
+							{
+								sign.setLine(2, sign.getLine(2) + ".");
+								sign.update(true);
+							}
+							else
+							{
+								Bukkit.getScheduler().cancelTask(task.getTaskId());
+								task = null;
+							}
 						}
 					}
+					pnt++;
 				}
 			}
 		}, 5L, 5L);
@@ -244,9 +242,8 @@ public class AnimationTask
 	
 	public void resetAnimation()
 	{
-		for (int i = 0; i < plugin.getConfigData().getSigns().size(); i++) 
+		for (BungeeSign s : plugin.getConfigData().getSigns()) 
 		{
-			BungeeSign s = plugin.getConfigData().getSigns().get(i);
 			if(s.getLocation().getBlock().getState() instanceof Sign)
 			{
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
