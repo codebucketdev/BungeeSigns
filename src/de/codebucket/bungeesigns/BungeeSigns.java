@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,14 +13,15 @@ import org.mcstats.Metrics;
 
 import de.codebucket.bungeesigns.handlers.ServerListener;
 
+import de.codebucket.bungeesigns.scheduler.AnimationTask;
 import de.codebucket.bungeesigns.scheduler.PingScheduler;
 import de.codebucket.bungeesigns.scheduler.SignScheduler;
-import de.codebucket.bungeesigns.sign.BungeeSign;
 
 public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 {
 	private PingScheduler ping;
 	private SignScheduler sign;
+	private AnimationTask anim;
 	private static BungeeSigns instance;
 	private static ConfigData data;
 	public static String pre = "§7[§3BungeeSigns§7] §r";
@@ -48,28 +48,26 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		data.loadConfig();
 		
 		//RESET SIGNS
-		for (int i = 0; i < getConfigData().getSigns().size(); i++) 
+		this.anim = new AnimationTask(this);
+		anim.resetAnimation();
+		anim.startAnimation();
+		
+		long time = (long) (10.3*20L);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
 		{
-			BungeeSign s = getConfigData().getSigns().get(i);
-			if(s.getLocation().getBlock().getState() instanceof Sign)
+			@Override
+			public void run() 
 			{
-				Sign sign = (Sign)s.getLocation().getBlock().getState();
-				sign.setLine(0, "");
-				sign.setLine(1, "");
-				sign.setLine(2, "");
-				sign.setLine(3, "");
-				sign.update(true);
+				//START SCHEDULERS
+				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
+				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
+				Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
+				
+				//BUNGEECORD API
+				getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
+				getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
 			}
-		}
-		
-		//START SCHEDULERS
-		Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
-		Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
-		
-		//BUNGEECORD API
-		getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
-		getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
+		}, time);
 		
 		//HINWEIS
 		getLogger().info("BungeeSigns Version 2.1 by Codebucket");
@@ -79,19 +77,8 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 	public void onDisable() 
 	{
 		//RESET SIGNS
-		for (int i = 0; i < getConfigData().getSigns().size(); i++) 
-		{
-			BungeeSign s = getConfigData().getSigns().get(i);
-			if(s.getLocation().getBlock().getState() instanceof Sign)
-			{
-				Sign sign = (Sign)s.getLocation().getBlock().getState();
-				sign.setLine(0, "");
-				sign.setLine(1, "");
-				sign.setLine(2, "");
-				sign.setLine(3, "");
-				sign.update(true);
-			}
-		}
+		anim.stopAnimation();
+		anim.resetAnimation();
 		
 		//UNLOAD CONFIG
 		data.unloadConfig();
