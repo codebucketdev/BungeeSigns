@@ -31,22 +31,22 @@ public class ServerListener implements Listener
 	}
 	
 	@EventHandler
-	public void createBungeeSign(SignChangeEvent e)
+	public void createBungeeSign(SignChangeEvent event)
 	{
-		if(!e.isCancelled())
+		if(!event.isCancelled())
 		{
-			if(e.getLine(0).equalsIgnoreCase("[bsigns]"))
+			if(event.getLine(0).equalsIgnoreCase("[bsigns]"))
 			{
-				if(e.getPlayer().hasPermission("bungeesigns.create"))
+				if(event.getPlayer().hasPermission("bungeesigns.create"))
 				{
-					String sname = e.getLine(1);
-					String lname = e.getLine(2);
+					String sname = event.getLine(1);
+					String lname = event.getLine(2);
 					if (lname.equalsIgnoreCase("")) 
 					{
 						lname = "default";
 				    }
 					
-					Location location = e.getBlock().getLocation();
+					Location location = event.getBlock().getLocation();
 					ServerInfo server = BungeeSigns.getInstance().getConfigData().getServer(sname);
 					SignLayout layout = BungeeSigns.getInstance().getConfigData().getLayout(lname);
 					if (server != null) 
@@ -54,24 +54,24 @@ public class ServerListener implements Listener
 						if (layout != null)
 					    {
 							BungeeSigns.getInstance().getConfigData().addSign(location, server, layout);
-				        	e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
+				        	event.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully created.");
 					    }
 						else
 						{
-							e.getPlayer().sendMessage(BungeeSigns.pre + "§cLayout '" + e.getLine(2) + "' not exists!");
-							e.getBlock().breakNaturally();
+							event.getPlayer().sendMessage(BungeeSigns.pre + "§cLayout '" + event.getLine(2) + "' not exists!");
+							event.getBlock().breakNaturally();
 						}
 			        }
 			        else
 			        {
-			        	e.getPlayer().sendMessage(BungeeSigns.pre + "§cServer '" + e.getLine(1) + "' not exists!");
-			        	e.getBlock().breakNaturally();
+			        	event.getPlayer().sendMessage(BungeeSigns.pre + "§cServer '" + event.getLine(1) + "' not exists!");
+			        	event.getBlock().breakNaturally();
 			        }
 				}
 				else
 				{
-					e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
-					e.getBlock().breakNaturally();
+					event.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+					event.getBlock().breakNaturally();
 				}
 			}
 		}
@@ -79,87 +79,88 @@ public class ServerListener implements Listener
 	
 	
 	@EventHandler
-	public void removeBungeeSign(BlockBreakEvent e)
+	public void removeBungeeSign(BlockBreakEvent event)
 	{
-		if(!e.isCancelled())
+		if(!event.isCancelled())
 		{
-			if(e.getBlock().getState() instanceof Sign)
+			if(event.getBlock().getState() instanceof Sign)
 			{
-				if(BungeeSigns.getInstance().getConfigData().containsSign(e.getBlock()))
+				if(BungeeSigns.getInstance().getConfigData().containsSign(event.getBlock()))
 				{
-					if(e.getPlayer().hasPermission("bungeesigns.destroy"))
+					if(event.getPlayer().hasPermission("bungeesigns.destroy"))
 					{
-						BungeeSigns.getInstance().getConfigData().removeSign(e.getBlock().getLocation());
-						e.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
+						BungeeSigns.getInstance().getConfigData().removeSign(event.getBlock().getLocation());
+						event.getPlayer().sendMessage(BungeeSigns.pre + "§aSign sucessfully destroyed.");
 					}
 					else
 					{
-						e.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
-						e.setCancelled(true);
+						event.getPlayer().sendMessage(BungeeSigns.pre + "§cYou don't have permission to do this!");
+						event.setCancelled(true);
 					}
 				}
 			}
 		}
 		else
 		{
-			e.setCancelled(true);
+			event.setCancelled(true);
 		}
 	}
 	
 	@EventHandler
-	public void interactBungeeSign(PlayerInteractEvent e)
+	public void playerInteract(PlayerInteractEvent event)
 	{
-		if(!e.isCancelled())
+		if(!event.isCancelled())
 		{
-			if(e.getAction() == Action.RIGHT_CLICK_BLOCK)
+			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
 			{
-				if(e.getClickedBlock().getState() instanceof Sign)
+				if(event.getClickedBlock().getState() instanceof Sign)
 				{
-					if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(e.getClickedBlock()))
+					if(BungeeSigns.getInstance().getConfigData().getBlocks().contains(event.getClickedBlock()))
 					{
-						if(e.getPlayer().hasPermission("bungeesigns.use"))
+						if(event.getPlayer().hasPermission("bungeesigns.use"))
 						{
 							for(BungeeSign sign : BungeeSigns.getInstance().getConfigData().getSigns())
 							{
-								if(sign != null && !sign.isBroken() && sign.getLocation().equals(e.getClickedBlock().getLocation()))
+								if(sign != null && !sign.isBroken() && sign.getLocation().equals(event.getClickedBlock().getLocation()))
 								{
 									ServerInfo server = sign.getServer();
 									if(server != null)
 									{
-										BungeeSignsInteractEvent event = new BungeeSignsInteractEvent(e.getPlayer(), sign, server);
-										Bukkit.getPluginManager().callEvent(event);
-										if(!event.isCancelled())
-										{
-											e.setCancelled(true);
-											if(sign.getLayout().isTeleport())
-											{
-												if(server.isOnline())
-												{
-													if(!hasCooldown(e.getPlayer()))
-													{
-														addCooldown(e.getPlayer());
-														event.getServer().teleportPlayer(e.getPlayer());
-													}
-													else
-													{
-														event.getPlayer().sendMessage(sign.getLayout().parseCooldownMessage(getCooldown(e.getPlayer())));
-													}
-												}
-												else
-												{
-													event.getPlayer().sendMessage(sign.getLayout().parseOfflineMessage(server));
-												}
-											}
-										}
-										else
-										{
-											e.setCancelled(false);
-										}
+										BungeeSignsInteractEvent e = new BungeeSignsInteractEvent(event.getPlayer(), sign, server);
+										Bukkit.getPluginManager().callEvent(e);
+										event.setCancelled(true);
 									}
 								}
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void interactBungeeSign(BungeeSignsInteractEvent event)
+	{
+		if(!event.isCancelled())
+		{
+			if(event.getSign().getLayout().isTeleport())
+			{
+				if(event.getServer().isOnline())
+				{
+					if(!hasCooldown(event.getPlayer()))
+					{
+						addCooldown(event.getPlayer());
+						event.getServer().teleportPlayer(event.getPlayer());
+					}
+					else
+					{
+						event.getPlayer().sendMessage(event.getSign().getLayout().parseCooldownMessage(getCooldown(event.getPlayer())));
+					}
+				}
+				else
+				{
+					event.getPlayer().sendMessage(event.getSign().getLayout().parseOfflineMessage(event.getServer()));
 				}
 			}
 		}

@@ -209,7 +209,6 @@ public class AnimationTask
 							else
 							{
 								Bukkit.getScheduler().cancelTask(task.getTaskId());
-								task = null;
 							}
 						}
 					}
@@ -230,7 +229,6 @@ public class AnimationTask
 							else
 							{
 								Bukkit.getScheduler().cancelTask(task.getTaskId());
-								task = null;
 							}
 						}
 					}

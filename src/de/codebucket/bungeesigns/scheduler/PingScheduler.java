@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import de.codebucket.bungeesigns.BungeeSigns;
@@ -14,13 +16,14 @@ import de.codebucket.bungeesigns.ping.ServerInfo;
 import de.codebucket.bungeesigns.ping.ServerPing;
 import de.codebucket.bungeesigns.ping.ServerPing.StatusResponse;
 
-public class PingScheduler implements Runnable
+public class PingScheduler implements Runnable, Listener
 {
 	private final BungeeSigns plugin;
 	
 	public PingScheduler(BungeeSigns plugin)
 	{
 		this.plugin = plugin;
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
 	@Override
@@ -29,6 +32,12 @@ public class PingScheduler implements Runnable
 		final List<ServerInfo> servers = plugin.getConfigData().getServers();
 		BungeeSignsPingEvent event = new BungeeSignsPingEvent(servers);
 		Bukkit.getPluginManager().callEvent(event);
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, plugin.getConfigData().getPingInterval() * 20);
+	}
+	
+	@EventHandler
+	public void onEvent(BungeeSignsPingEvent event)
+	{
 		if(!event.isCancelled())
 		{
 			for(ServerInfo server : event.getServers())
@@ -51,8 +60,6 @@ public class PingScheduler implements Runnable
 				}
 			}
 		}
-		
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, plugin.getConfigData().getPingInterval() * 20);
 	}
 	
 	private void pingAsync(final ServerInfo server)
