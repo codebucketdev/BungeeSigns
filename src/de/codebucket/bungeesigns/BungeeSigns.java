@@ -59,8 +59,8 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 			public void run() 
 			{
 				//START SCHEDULERS
+				Bukkit.getScheduler().runTaskLater(instance, sign, 40L);
 				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, ping, 5L);
-				Bukkit.getScheduler().runTaskLaterAsynchronously(instance, sign, 40L);
 				Bukkit.getPluginManager().registerEvents(new ServerListener(instance), instance);
 				
 				//BUNGEECORD API
