@@ -12,6 +12,8 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import de.codebucket.bungeesigns.BungeeSigns;
 import de.codebucket.bungeesigns.event.BungeeSignsPingEvent;
+import de.codebucket.bungeesigns.event.ServerChangeStatusEvent;
+import de.codebucket.bungeesigns.event.ServerPingResponseEvent;
 import de.codebucket.bungeesigns.ping.ServerInfo;
 import de.codebucket.bungeesigns.ping.ServerPing;
 import de.codebucket.bungeesigns.ping.ServerPing.StatusResponse;
@@ -36,11 +38,11 @@ public class PingScheduler implements Runnable, Listener
 	}
 	
 	@EventHandler
-	public void onEvent(BungeeSignsPingEvent event)
+	public void onEvent(BungeeSignsPingEvent e)
 	{
-		if(!event.isCancelled())
+		if(!e.isCancelled())
 		{
-			for(ServerInfo server : event.getServers())
+			for(ServerInfo server : e.getServers())
 			{
 				if(!server.isLocal())
 				{
@@ -48,6 +50,7 @@ public class PingScheduler implements Runnable, Listener
 				}
 				else
 				{
+					final String status = server.getMotd();
 					ServerListPingEvent ping = new ServerListPingEvent(new InetSocketAddress(Bukkit.getIp(), Bukkit.getPort()).getAddress(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().length, Bukkit.getMaxPlayers());
 					Bukkit.getPluginManager().callEvent(ping);
 					server.setProtocol(getBukkitVersion());
@@ -57,6 +60,12 @@ public class PingScheduler implements Runnable, Listener
 					server.setPingStart(System.currentTimeMillis());
 					server.setPingEnd(System.currentTimeMillis());
 			        server.setOnline(true);
+			        
+			        if(!server.getMotd().equals(status))
+					{
+						ServerChangeStatusEvent sevent = new ServerChangeStatusEvent(server, server.getMotd());
+						BungeeSigns.getInstance().callSyncEvent(sevent);
+					}
 				}
 			}
 		}
@@ -79,6 +88,7 @@ public class PingScheduler implements Runnable, Listener
 					
 					try 
 					{
+						final String status = server.getMotd();
 						StatusResponse response = ping.fetchData();
 						server.setVersion(formatVersion(response.getVersion().getName()));
 						server.setProtocol(response.getVersion().getProtocol());
@@ -87,6 +97,15 @@ public class PingScheduler implements Runnable, Listener
 						server.setMaxPlayers(response.getPlayers().getMax());
 						server.setPingStart(pingStartTime);
 						server.setOnline(true);
+						
+						ServerPingResponseEvent revent = new ServerPingResponseEvent(server, ping, response);
+						BungeeSigns.getInstance().callSyncEvent(revent);
+						
+						if(!server.getMotd().equals(status))
+						{
+							ServerChangeStatusEvent sevent = new ServerChangeStatusEvent(server, server.getMotd());
+							BungeeSigns.getInstance().callSyncEvent(sevent);
+						}
 					} 
 					catch(Exception e)
 					{

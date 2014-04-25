@@ -1,6 +1,6 @@
 name: BungeeSigns
 author: Codebucket
-version: 2.1 Release
+version: 2.3 Release
 main: de.codebucket.bungeesigns.BungeeSigns
 website: http://www.codebucket.de
 commands:

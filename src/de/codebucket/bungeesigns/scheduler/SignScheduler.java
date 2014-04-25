@@ -27,7 +27,7 @@ public class SignScheduler implements Runnable, Listener
 		final List<BungeeSign> signs = plugin.getConfigData().getSigns();
 		BungeeSignsUpdateEvent event = new BungeeSignsUpdateEvent(signs);
 		Bukkit.getPluginManager().callEvent(event);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, plugin.getConfigData().getUpdateInterval());
+		Bukkit.getScheduler().runTaskLater(plugin, this, plugin.getConfigData().getUpdateInterval());
 	}
 	
 	@EventHandler

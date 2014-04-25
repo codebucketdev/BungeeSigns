@@ -64,7 +64,7 @@ public class AnimationTask
 				Sign sign = (Sign)s.getLocation().getBlock().getState();
 				sign.setLine(0, "---------------");
 				sign.setLine(1, "BungeeSigns");
-				sign.setLine(2, "§lVersion 2.1");
+				sign.setLine(2, "§lVersion 2.3");
 				sign.setLine(3, "---------------");
 				sign.update(true);
 			}

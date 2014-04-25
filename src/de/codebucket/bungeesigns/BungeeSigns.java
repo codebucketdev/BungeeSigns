@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.mcstats.Metrics;
@@ -70,7 +71,7 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		}, time);
 		
 		//HINWEIS
-		getLogger().info("BungeeSigns Version 2.1 by Codebucket");
+		getLogger().info("BungeeSigns Version 2.3 by Codebucket");
 	}
 	
 	@Override
@@ -135,6 +136,18 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				}
 			}
 		}
+	}
+	
+	public void callSyncEvent(final Event event)
+	{
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable()
+		{
+			@Override
+			public void run() 
+			{
+				getServer().getPluginManager().callEvent(event);
+			}
+		});
 	}
 	
 	public void logConsole(Level level, String error)
