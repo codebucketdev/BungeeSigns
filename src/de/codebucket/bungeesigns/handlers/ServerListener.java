@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -30,8 +31,8 @@ public class ServerListener implements Listener
 		this.plugin = plugin;
 	}
 	
-	@EventHandler
-	public void createBungeeSign(SignChangeEvent event)
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onCreateBungeeSign(SignChangeEvent event)
 	{
 		if(!event.isCancelled())
 		{
@@ -78,8 +79,8 @@ public class ServerListener implements Listener
 	}
 	
 	
-	@EventHandler
-	public void removeBungeeSign(BlockBreakEvent event)
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onRemoveBungeeSign(BlockBreakEvent event)
 	{
 		if(!event.isCancelled())
 		{
@@ -106,8 +107,8 @@ public class ServerListener implements Listener
 		}
 	}
 	
-	@EventHandler
-	public void playerInteract(PlayerInteractEvent event)
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPlayerInteract(PlayerInteractEvent event)
 	{
 		if(!event.isCancelled())
 		{
@@ -139,8 +140,8 @@ public class ServerListener implements Listener
 		}
 	}
 	
-	@EventHandler
-	public void interactBungeeSign(BungeeSignsInteractEvent event)
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onBungeeSignInteract(BungeeSignsInteractEvent event)
 	{
 		if(!event.isCancelled())
 		{
