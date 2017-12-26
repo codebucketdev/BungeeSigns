@@ -41,9 +41,8 @@ public class ServerInfo
 	    this.pingStartTime = System.currentTimeMillis();
 	    this.pingEndTime = System.currentTimeMillis();
 	    
-	    if(Bukkit.getServer().getIp().equals(address) && Bukkit.getServer().getPort() == Integer.valueOf(port))
-	    {
-	    	this.local = true;
+	    if (Bukkit.getServer().getPort() == Integer.valueOf(port).intValue()) {
+	        this.local = true;
 	    }
 	}
 	
