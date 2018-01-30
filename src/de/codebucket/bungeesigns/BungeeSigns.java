@@ -69,6 +69,9 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 				getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", instance);
 			}
 		}, time);
+		if (getConfig().getString("options.connect-timeout") != null) {
+		    setBukkitConnectTimeOut();
+		}
 		
 		//HINWEIS
 		getLogger().info("BungeeSigns Version 2.3 by Codebucket");
@@ -166,5 +169,20 @@ public class BungeeSigns extends JavaPlugin implements PluginMessageListener
 		{
 			return;
 	    }
+	}
+
+	public void setBukkitConnectTimeOut() {
+		File bukFile = new File(Bukkit.getServer().getWorldContainer().getName(), "bukkit.yml");
+		if (!bukFile.exists()) {
+		    logConsole(Level.WARNING, "[BungeeSigns] WARNING! The bukkit.yml file can not be found!");
+		    return;
+		}
+		FileConfiguration bfi = YamlConfiguration.loadConfiguration(bukfile);
+		bfi.set("settings.connection-throttle", Integer.valueOf(getConfig().getInt("options.connect-timeout")));
+		try {
+		    bfi.save(bukfile);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 	}
 }
